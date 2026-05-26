@@ -1,0 +1,11 @@
+skip-check:
+  # CKV_OCI_17: Security list ingress rules default to stateful (stateless = false), which is
+  #   intentional. OCI stateful rules automatically allow return traffic; stateless rules would
+  #   require callers to define explicit reverse egress rules for every ingress rule, making the
+  #   module significantly harder to use correctly. Users who require stateless rules can set
+  #   stateless = true per-rule in the public_security_list_rules / private_security_list_rules
+  #   / database_security_list_rules / intra_security_list_rules variables.
+  - CKV_OCI_17
+  # CKV_TF_1: Registry module refs should use commit hashes. Terraform Registry sources use
+  #   semantic version constraints (version = "~> x.y"), not commit hashes.
+  - CKV_TF_1

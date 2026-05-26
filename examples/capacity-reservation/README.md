@@ -1,0 +1,63 @@
+# Capacity Reservation
+
+Configuration in this directory demonstrates launching an instance into a compute capacity reservation, guaranteeing that the required host capacity exists before the instance is created. Maps to `capacity_reservation_specification` in the AWS module.
+
+A `VM.Standard.E4.Flex` reservation is created first (1 OCPU / 8 GB), then the instance targets it via `capacity_reservation_id`. The instance shape and `shape_config` must exactly match the reservation's `instance_reservation_configs`.
+
+## Usage
+
+To run this example you need to execute:
+
+```bash
+$ terraform init
+$ terraform plan
+$ terraform apply
+```
+
+Note that this example may create resources which can cost money (capacity reservations are billed for reserved but unused capacity). Run `terraform destroy` when you no longer need these resources.
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+| ---- | ------- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
+| <a name="requirement_oci"></a> [oci](#requirement\_oci) | >= 6.0 |
+
+## Providers
+
+| Name | Version |
+| ---- | ------- |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | >= 6.0 |
+
+## Modules
+
+| Name | Source | Version |
+| ---- | ------ | ------- |
+| <a name="module_instance"></a> [instance](#module\_instance) | ../../ | n/a |
+| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.5 |
+
+## Resources
+
+| Name | Type |
+| ---- | ---- |
+| [oci_core_compute_capacity_reservation.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_compute_capacity_reservation) | resource |
+| [oci_core_images.oracle_linux](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_images) | data source |
+| [oci_identity_availability_domains.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_availability_domains) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+| ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | The OCID of the compartment where resources will be created | `string` | n/a | yes |
+| <a name="input_ssh_public_key"></a> [ssh\_public\_key](#input\_ssh\_public\_key) | SSH public key string to inject into the instance | `string` | `null` | no |
+
+## Outputs
+
+| Name | Description |
+| ---- | ----------- |
+| <a name="output_availability_domain"></a> [availability\_domain](#output\_availability\_domain) | The availability domain where the instance was placed |
+| <a name="output_capacity_reservation_id"></a> [capacity\_reservation\_id](#output\_capacity\_reservation\_id) | The OCID of the capacity reservation |
+| <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id) | The OCID of the instance |
+| <a name="output_private_ip"></a> [private\_ip](#output\_private\_ip) | The private IP address of the instance |
+<!-- END_TF_DOCS -->

@@ -3,7 +3,7 @@
 ################################################################################
 
 variable "create" {
-  description = "Controls if resources should be created (master switch — affects all resources)"
+  description = "Controls if resources should be created (master switch - affects all resources)"
   type        = bool
   default     = true
 }
@@ -237,7 +237,7 @@ variable "hostname_label" {
 variable "source_dest_check" {
   description = <<-EOT
     Whether to enable source/destination checking on the primary VNIC.
-    Maps directly to the AWS source_dest_check flag — true (default) enables the check.
+    Maps directly to the AWS source_dest_check flag - true (default) enables the check.
     Set to false when the instance acts as a router, NAT, or firewall.
   EOT
   type        = bool
@@ -273,7 +273,7 @@ variable "ipv6address_ipv6subnet_cidr_pair_details" {
     List of specific IPv6 address + subnet CIDR pairs to assign to the primary VNIC.
     Maps to ipv6_addresses in the AWS module.
     Each entry specifies the /64 subnet CIDR (ipv6subnet_cidr) from which the
-    address should come; ipv6address is optional — omit it to let OCI auto-select.
+    address should come; ipv6address is optional - omit it to let OCI auto-select.
     Ignored when assign_ipv6ip = false.
     Example: [{ ipv6subnet_cidr = "2001:db8::/64", ipv6address = "2001:db8::10" }]
   EOT
@@ -282,6 +282,41 @@ variable "ipv6address_ipv6subnet_cidr_pair_details" {
     ipv6address     = optional(string)
   }))
   default  = []
+  nullable = false
+}
+
+variable "secondary_network_interface" {
+  description = <<-EOT
+    Map of secondary VNICs to attach to the instance after launch. Maps to
+    secondary_network_interface in the AWS module. Each key becomes part of
+    the VNIC attachment's display_name.
+
+    nic_index selects the physical network card (0 by default; only relevant
+    on bare metal shapes with multiple physical NICs). There is no OCI
+    equivalent of AWS's device_index - the OS assigns VNIC device names.
+
+    Example:
+      secondary_network_interface = {
+        "eth1" = {
+          subnet_id = "ocid1.subnet.oc1..."
+        }
+      }
+  EOT
+  type = map(object({
+    subnet_id                 = string
+    nic_index                 = optional(number, 0)
+    private_ip                = optional(string)
+    assign_public_ip          = optional(bool, false)
+    assign_ipv6ip             = optional(bool, false)
+    assign_private_dns_record = optional(bool, true)
+    hostname_label            = optional(string)
+    skip_source_dest_check    = optional(bool, false)
+    nsg_ids                   = optional(list(string), [])
+    display_name              = optional(string)
+    tags                      = optional(map(string), {})
+    defined_tags              = optional(map(string), {})
+  }))
+  default  = {}
   nullable = false
 }
 
@@ -331,7 +366,7 @@ variable "boot_volume_vpus_per_gb" {
   description = <<-EOT
     Performance level for the boot volume in VPUs per GB:
       0   → Lower Cost (low iops, good for dev/test)
-      10  → Balanced (default — general purpose)
+      10  → Balanced (default - general purpose)
       20  → Higher Performance
       30+ → Ultra High Performance (30-120, increments of 10)
     Maps to root_block_device.iops (indirectly) in AWS.
@@ -614,7 +649,7 @@ variable "preemptible_instance_config" {
     instance_market_options in AWS. When null, the instance is on-demand.
 
     OCI preemptible instances are terminated when capacity is needed; there is no
-    price bidding — you pay a fixed lower price.
+    price bidding - you pay a fixed lower price.
 
     action                          - "TERMINATE" (default) or "STOP" (shape-dependent)
     preserve_boot_volume_on_termination - Whether to keep the boot volume on preemption

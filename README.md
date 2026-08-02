@@ -2,7 +2,7 @@
 
 Terraform module which creates Compute Instance resources on Oracle Cloud Infrastructure (OCI).
 
-Designed to be familiar to users of the [terraform-aws-modules/ec2-instance/aws](https://github.com/terraform-aws-modules/terraform-aws-ec2-instance) module — same variable naming conventions, same file structure, same developer experience.
+Designed to be familiar to users of the [terraform-aws-modules/ec2-instance/aws](https://github.com/terraform-aws-modules/terraform-aws-ec2-instance) module - same variable naming conventions, same file structure, same developer experience.
 
 ## Usage
 
@@ -33,7 +33,7 @@ module "instance" {
 
 ## Flex Shapes
 
-OCI Flex shapes allow independent selection of OCPU count and memory — unlike AWS instance types
+OCI Flex shapes allow independent selection of OCPU count and memory - unlike AWS instance types
 which are fixed bundles. Any shape ending in `.Flex` requires `shape_config`:
 
 ```hcl
@@ -94,19 +94,20 @@ resource "oci_identity_policy" "instance" {
 }
 ```
 
-OCI Instance Principal is architecturally different from AWS IAM instance profiles — Dynamic Groups
+OCI Instance Principal is architecturally different from AWS IAM instance profiles - Dynamic Groups
 and policies are tenant-level constructs managed separately from the compute instance.
 
 ## Examples
 
-- [simple](examples/simple) — Minimal instance with private networking
-- [complete](examples/complete) — All features: flex shape, block volumes, NSG, boot volume backup, metadata options
-- [flex-shape](examples/flex-shape) — Burstable OCPU modes (BASELINE_1_1, BASELINE_1_2, BASELINE_1_8)
-- [block-volumes](examples/block-volumes) — Paravirtualized and iSCSI block volume attachments
-- [reserved-ip](examples/reserved-ip) — Reserved (static) public IP creation and attachment
-- [windows](examples/windows) — Windows Server instance with credential output
-- [capacity-reservation](examples/capacity-reservation) — Launch into a pre-provisioned capacity reservation
-- [ipv6](examples/ipv6) — Dual-stack instance with IPv6 address assignment
+- [simple](examples/simple) - Minimal instance with private networking
+- [complete](examples/complete) - All features: flex shape, block volumes, NSG, boot volume backup, metadata options
+- [flex-shape](examples/flex-shape) - Burstable OCPU modes (BASELINE_1_1, BASELINE_1_2, BASELINE_1_8)
+- [block-volumes](examples/block-volumes) - Paravirtualized and iSCSI block volume attachments
+- [reserved-ip](examples/reserved-ip) - Reserved (static) public IP creation and attachment
+- [windows](examples/windows) - Windows Server instance with credential output
+- [capacity-reservation](examples/capacity-reservation) - Launch into a pre-provisioned capacity reservation
+- [ipv6](examples/ipv6) - Dual-stack instance with IPv6 address assignment
+- [secondary-network-interface](examples/secondary-network-interface) - Attaching a secondary VNIC after launch
 
 ## AWS → OCI Feature Parity
 
@@ -145,14 +146,14 @@ This is an independent community module and is **not affiliated with, endorsed b
 ## Requirements
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
 | <a name="requirement_oci"></a> [oci](#requirement\_oci) | >= 6.0 |
 
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="provider_oci"></a> [oci](#provider\_oci) | >= 6.0 |
 
 ## Modules
@@ -162,19 +163,21 @@ No modules.
 ## Resources
 
 | Name | Type |
-| ---- | ---- |
+|------|------|
 | [oci_core_instance.ignore_image](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance) | resource |
 | [oci_core_instance.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance) | resource |
 | [oci_core_network_security_group.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_network_security_group) | resource |
 | [oci_core_network_security_group_security_rule.egress](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_network_security_group_security_rule) | resource |
 | [oci_core_network_security_group_security_rule.ingress](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_network_security_group_security_rule) | resource |
 | [oci_core_public_ip.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_public_ip) | resource |
+| [oci_core_vnic_attachment.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_vnic_attachment) | resource |
 | [oci_core_volume.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_volume) | resource |
 | [oci_core_volume_attachment.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_volume_attachment) | resource |
 | [oci_core_volume_backup_policy_assignment.block](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_volume_backup_policy_assignment) | resource |
 | [oci_core_volume_backup_policy_assignment.boot](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_volume_backup_policy_assignment) | resource |
 | [oci_core_instance_credentials.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_instance_credentials) | data source |
 | [oci_core_private_ips.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_private_ips) | data source |
+| [oci_core_vnic.secondary](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_vnic) | data source |
 | [oci_core_vnic_attachments.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_vnic_attachments) | data source |
 | [oci_core_volume_backup_policies.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_volume_backup_policies) | data source |
 | [oci_identity_availability_domains.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/identity_availability_domains) | data source |
@@ -182,7 +185,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-| ---- | ----------- | ---- | ------- | :------: |
+|------|-------------|------|---------|:--------:|
 | <a name="input_are_all_plugins_disabled"></a> [are\_all\_plugins\_disabled](#input\_are\_all\_plugins\_disabled) | Whether to disable all cloud agent plugins. When true, overrides individual plugin settings | `bool` | `false` | no |
 | <a name="input_assign_ipv6ip"></a> [assign\_ipv6ip](#input\_assign\_ipv6ip) | Whether to auto-assign an IPv6 address from the subnet's IPv6 CIDR pool.<br/>Maps to ipv6\_addresses / ipv6\_address\_count in the AWS module.<br/>Requires the subnet (and VCN) to have IPv6 enabled. When true and<br/>ipv6address\_ipv6subnet\_cidr\_pair\_details is empty, OCI picks an address<br/>automatically from each IPv6-enabled subnet CIDR associated with the VNIC.<br/>When false (default), no IPv6 address is assigned. | `bool` | `false` | no |
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign an ephemeral public IP to the primary VNIC.<br/>Maps to associate\_public\_ip\_address in AWS.<br/>For a stable public IP, use create\_reserved\_public\_ip instead. | `bool` | `false` | no |
@@ -191,11 +194,11 @@ No modules.
 | <a name="input_boot_volume_backup_policy"></a> [boot\_volume\_backup\_policy](#input\_boot\_volume\_backup\_policy) | OCI predefined backup policy to assign to the boot volume.<br/>"gold"     → daily, weekly, monthly and yearly backups (longest retention)<br/>"silver"   → daily and weekly backups<br/>"bronze"   → monthly and yearly backups<br/>"disabled" → no backup policy assigned (default) | `string` | `"disabled"` | no |
 | <a name="input_boot_volume_encryption_key_id"></a> [boot\_volume\_encryption\_key\_id](#input\_boot\_volume\_encryption\_key\_id) | OCID of the KMS key to use for boot volume encryption. When null, OCI-managed encryption is used. Maps to root\_block\_device.kms\_key\_id in AWS | `string` | `null` | no |
 | <a name="input_boot_volume_size_in_gbs"></a> [boot\_volume\_size\_in\_gbs](#input\_boot\_volume\_size\_in\_gbs) | The size of the boot volume in GBs. When null, defaults to the image's minimum size. Maps to root\_block\_device.volume\_size in AWS | `number` | `null` | no |
-| <a name="input_boot_volume_vpus_per_gb"></a> [boot\_volume\_vpus\_per\_gb](#input\_boot\_volume\_vpus\_per\_gb) | Performance level for the boot volume in VPUs per GB:<br/>  0   → Lower Cost (low iops, good for dev/test)<br/>  10  → Balanced (default — general purpose)<br/>  20  → Higher Performance<br/>  30+ → Ultra High Performance (30-120, increments of 10)<br/>Maps to root\_block\_device.iops (indirectly) in AWS. | `number` | `null` | no |
+| <a name="input_boot_volume_vpus_per_gb"></a> [boot\_volume\_vpus\_per\_gb](#input\_boot\_volume\_vpus\_per\_gb) | Performance level for the boot volume in VPUs per GB:<br/>  0   → Lower Cost (low iops, good for dev/test)<br/>  10  → Balanced (default - general purpose)<br/>  20  → Higher Performance<br/>  30+ → Ultra High Performance (30-120, increments of 10)<br/>Maps to root\_block\_device.iops (indirectly) in AWS. | `number` | `null` | no |
 | <a name="input_capacity_reservation_id"></a> [capacity\_reservation\_id](#input\_capacity\_reservation\_id) | OCID of a compute capacity reservation to launch this instance into.<br/>Maps to capacity\_reservation\_specification in the AWS module.<br/><br/>When set, OCI guarantees that the required compute capacity exists before<br/>the instance is launched. The instance shape and shape\_config must match<br/>the instance\_reservation\_configs defined on the reservation.<br/><br/>When null (default), the instance is launched without targeting a reservation. | `string` | `null` | no |
 | <a name="input_cloud_agent_plugins"></a> [cloud\_agent\_plugins](#input\_cloud\_agent\_plugins) | Map of cloud agent plugin aliases to their desired state ("ENABLED" or "DISABLED").<br/>Aliases are normalized to OCI plugin names automatically.<br/><br/>Available aliases:<br/>  monitoring             → "Compute Instance Monitoring"<br/>  bastion                → "Bastion"<br/>  run\_command            → "Run Command"<br/>  osms                   → "OS Management Service Agent"<br/>  custom\_logs            → "Custom Logs Monitoring"<br/>  vulnerability\_scanning → "Vulnerability Scanning"<br/>  block\_volume\_mgmt      → "Block Volume Management"<br/>  management             → "Management Agent"<br/>  java\_management\_service→ "Java Management Service"<br/>  autonomous\_linux       → "Oracle Autonomous Linux"<br/><br/>You may also pass OCI plugin names directly (the full string). | `map(string)` | `{}` | no |
 | <a name="input_compartment_id"></a> [compartment\_id](#input\_compartment\_id) | The OCID of the compartment where all resources will be created | `string` | n/a | yes |
-| <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (master switch — affects all resources) | `bool` | `true` | no |
+| <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (master switch - affects all resources) | `bool` | `true` | no |
 | <a name="input_create_nsg"></a> [create\_nsg](#input\_create\_nsg) | Whether to create a Network Security Group for this instance. Maps to create\_security\_group in AWS | `bool` | `false` | no |
 | <a name="input_create_reserved_public_ip"></a> [create\_reserved\_public\_ip](#input\_create\_reserved\_public\_ip) | Whether to create a reserved (static) public IP and assign it to the instance.<br/>Maps to create\_eip in the AWS module. Use this for a stable outbound IP that<br/>survives instance replacement (unlike assign\_public\_ip which is ephemeral). | `bool` | `false` | no |
 | <a name="input_dedicated_vm_host_id"></a> [dedicated\_vm\_host\_id](#input\_dedicated\_vm\_host\_id) | OCID of the dedicated VM host to place this instance on. Maps to AWS host\_id / dedicated host tenancy | `string` | `null` | no |
@@ -208,7 +211,7 @@ No modules.
 | <a name="input_instance_initiated_shutdown_behavior"></a> [instance\_initiated\_shutdown\_behavior](#input\_instance\_initiated\_shutdown\_behavior) | What happens when the OS initiates a shutdown. Maps to<br/>instance\_initiated\_shutdown\_behavior in AWS.<br/>"STOP"      → instance stops (can be restarted)<br/>"TERMINATE" → instance is permanently terminated<br/>null        → use OCI default (STOP) | `string` | `null` | no |
 | <a name="input_instance_state"></a> [instance\_state](#input\_instance\_state) | Desired state of the instance: "RUNNING" (default) or "STOPPED" | `string` | `"RUNNING"` | no |
 | <a name="input_instance_tags"></a> [instance\_tags](#input\_instance\_tags) | Tags applied to the instance only (merged with var.tags) | `map(string)` | `{}` | no |
-| <a name="input_ipv6address_ipv6subnet_cidr_pair_details"></a> [ipv6address\_ipv6subnet\_cidr\_pair\_details](#input\_ipv6address\_ipv6subnet\_cidr\_pair\_details) | List of specific IPv6 address + subnet CIDR pairs to assign to the primary VNIC.<br/>Maps to ipv6\_addresses in the AWS module.<br/>Each entry specifies the /64 subnet CIDR (ipv6subnet\_cidr) from which the<br/>address should come; ipv6address is optional — omit it to let OCI auto-select.<br/>Ignored when assign\_ipv6ip = false.<br/>Example: [{ ipv6subnet\_cidr = "2001:db8::/64", ipv6address = "2001:db8::10" }] | <pre>list(object({<br/>    ipv6subnet_cidr = string<br/>    ipv6address     = optional(string)<br/>  }))</pre> | `[]` | no |
+| <a name="input_ipv6address_ipv6subnet_cidr_pair_details"></a> [ipv6address\_ipv6subnet\_cidr\_pair\_details](#input\_ipv6address\_ipv6subnet\_cidr\_pair\_details) | List of specific IPv6 address + subnet CIDR pairs to assign to the primary VNIC.<br/>Maps to ipv6\_addresses in the AWS module.<br/>Each entry specifies the /64 subnet CIDR (ipv6subnet\_cidr) from which the<br/>address should come; ipv6address is optional - omit it to let OCI auto-select.<br/>Ignored when assign\_ipv6ip = false.<br/>Example: [{ ipv6subnet\_cidr = "2001:db8::/64", ipv6address = "2001:db8::10" }] | <pre>list(object({<br/>    ipv6subnet_cidr = string<br/>    ipv6address     = optional(string)<br/>  }))</pre> | `[]` | no |
 | <a name="input_ipxe_script"></a> [ipxe\_script](#input\_ipxe\_script) | Custom iPXE script to run at instance boot. OCI-native feature with no direct AWS equivalent.<br/>Overrides the default iPXE boot script provided by OCI. Useful for custom network boot<br/>sequences or chainloading. Was present in the legacy OCI compute module.<br/>When null (default), the standard OCI iPXE boot process is used. | `string` | `null` | no |
 | <a name="input_is_management_disabled"></a> [is\_management\_disabled](#input\_is\_management\_disabled) | Whether to disable the Management Agent plugin on this instance | `bool` | `false` | no |
 | <a name="input_is_monitoring_disabled"></a> [is\_monitoring\_disabled](#input\_is\_monitoring\_disabled) | Whether to disable the Compute Instance Monitoring plugin. Maps to disabling detailed monitoring in AWS | `bool` | `false` | no |
@@ -222,13 +225,14 @@ No modules.
 | <a name="input_nsg_name"></a> [nsg\_name](#input\_nsg\_name) | Name for the created NSG. Defaults to "<name>-nsg" when null | `string` | `null` | no |
 | <a name="input_nsg_tags"></a> [nsg\_tags](#input\_nsg\_tags) | Additional freeform tags to apply to the created NSG only | `map(string)` | `{}` | no |
 | <a name="input_nsg_vcn_id"></a> [nsg\_vcn\_id](#input\_nsg\_vcn\_id) | The OCID of the VCN in which to create the NSG. Required when create\_nsg = true | `string` | `null` | no |
-| <a name="input_preemptible_instance_config"></a> [preemptible\_instance\_config](#input\_preemptible\_instance\_config) | Configuration for preemptible (spot-equivalent) instances. Maps to<br/>instance\_market\_options in AWS. When null, the instance is on-demand.<br/><br/>OCI preemptible instances are terminated when capacity is needed; there is no<br/>price bidding — you pay a fixed lower price.<br/><br/>action                          - "TERMINATE" (default) or "STOP" (shape-dependent)<br/>preserve\_boot\_volume\_on\_termination - Whether to keep the boot volume on preemption | <pre>object({<br/>    action                              = string<br/>    preserve_boot_volume_on_termination = optional(bool, false)<br/>  })</pre> | `null` | no |
+| <a name="input_preemptible_instance_config"></a> [preemptible\_instance\_config](#input\_preemptible\_instance\_config) | Configuration for preemptible (spot-equivalent) instances. Maps to<br/>instance\_market\_options in AWS. When null, the instance is on-demand.<br/><br/>OCI preemptible instances are terminated when capacity is needed; there is no<br/>price bidding - you pay a fixed lower price.<br/><br/>action                          - "TERMINATE" (default) or "STOP" (shape-dependent)<br/>preserve\_boot\_volume\_on\_termination - Whether to keep the boot volume on preemption | <pre>object({<br/>    action                              = string<br/>    preserve_boot_volume_on_termination = optional(bool, false)<br/>  })</pre> | `null` | no |
 | <a name="input_preserve_boot_volume"></a> [preserve\_boot\_volume](#input\_preserve\_boot\_volume) | Whether to keep the boot volume when the instance is terminated. Maps to root\_block\_device.delete\_on\_termination (inverted) in AWS | `bool` | `false` | no |
 | <a name="input_private_ip"></a> [private\_ip](#input\_private\_ip) | Private IP address to assign to the primary VNIC. When null, OCI auto-assigns an IP from the subnet CIDR | `string` | `null` | no |
 | <a name="input_reserved_public_ip_tags"></a> [reserved\_public\_ip\_tags](#input\_reserved\_public\_ip\_tags) | Additional freeform tags to apply to the reserved public IP resource only | `map(string)` | `{}` | no |
+| <a name="input_secondary_network_interface"></a> [secondary\_network\_interface](#input\_secondary\_network\_interface) | Map of secondary VNICs to attach to the instance after launch. Maps to<br/>secondary\_network\_interface in the AWS module. Each key becomes part of<br/>the VNIC attachment's display\_name.<br/><br/>nic\_index selects the physical network card (0 by default; only relevant<br/>on bare metal shapes with multiple physical NICs). There is no OCI<br/>equivalent of AWS's device\_index - the OS assigns VNIC device names.<br/><br/>Example:<br/>  secondary\_network\_interface = {<br/>    "eth1" = {<br/>      subnet\_id = "ocid1.subnet.oc1..."<br/>    }<br/>  } | <pre>map(object({<br/>    subnet_id                 = string<br/>    nic_index                 = optional(number, 0)<br/>    private_ip                = optional(string)<br/>    assign_public_ip          = optional(bool, false)<br/>    assign_ipv6ip             = optional(bool, false)<br/>    assign_private_dns_record = optional(bool, true)<br/>    hostname_label            = optional(string)<br/>    skip_source_dest_check    = optional(bool, false)<br/>    nsg_ids                   = optional(list(string), [])<br/>    display_name              = optional(string)<br/>    tags                      = optional(map(string), {})<br/>    defined_tags              = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
 | <a name="input_shape"></a> [shape](#input\_shape) | The shape of the instance, e.g. "VM.Standard.E4.Flex" or "VM.Standard3.Flex".<br/>Maps to the AWS instance\_type concept.<br/><br/>Shapes ending in ".Flex" require shape\_config to specify OCPU and memory.<br/>Fixed shapes (e.g. "VM.Standard.E3.Flex") use OCI-defined resource sizes. | `string` | `"VM.Standard.E4.Flex"` | no |
 | <a name="input_shape_config"></a> [shape\_config](#input\_shape\_config) | Shape configuration for Flex shapes. Ignored for fixed shapes.<br/><br/>ocpus                     - Number of OCPUs (e.g. 1, 2, 4, 8). Maps to cpu\_options.core\_count.<br/>memory\_in\_gbs             - Memory in GB (e.g. 16, 32, 64).<br/>baseline\_ocpu\_utilization - Burstable CPU mode. Maps to cpu\_credits in AWS.<br/>                            "BASELINE\_1\_1"  → 100% baseline (Standard)<br/>                            "BASELINE\_1\_2"  → 50%  baseline (Burstable)<br/>                            "BASELINE\_1\_8"  → 12.5% baseline (Burstable) | <pre>object({<br/>    ocpus                     = optional(number)<br/>    memory_in_gbs             = optional(number)<br/>    baseline_ocpu_utilization = optional(string)<br/>  })</pre> | `{}` | no |
-| <a name="input_source_dest_check"></a> [source\_dest\_check](#input\_source\_dest\_check) | Whether to enable source/destination checking on the primary VNIC.<br/>Maps directly to the AWS source\_dest\_check flag — true (default) enables the check.<br/>Set to false when the instance acts as a router, NAT, or firewall. | `bool` | `true` | no |
+| <a name="input_source_dest_check"></a> [source\_dest\_check](#input\_source\_dest\_check) | Whether to enable source/destination checking on the primary VNIC.<br/>Maps directly to the AWS source\_dest\_check flag - true (default) enables the check.<br/>Set to false when the instance acts as a router, NAT, or firewall. | `bool` | `true` | no |
 | <a name="input_source_id"></a> [source\_id](#input\_source\_id) | The OCID of the image or boot volume to use as the instance source.<br/>Maps to the AWS AMI ID concept.<br/><br/>When source\_type = "image"       → provide an image OCID<br/>When source\_type = "boot\_volume" → provide a boot volume OCID | `string` | `null` | no |
 | <a name="input_source_type"></a> [source\_type](#input\_source\_type) | Type of the instance source. Either "image" (default) or "boot\_volume" | `string` | `"image"` | no |
 | <a name="input_ssh_authorized_keys"></a> [ssh\_authorized\_keys](#input\_ssh\_authorized\_keys) | One or more SSH public keys to inject into the instance via cloud-init metadata.<br/>Pass the full public key string(s) (newline-separated for multiple keys).<br/>Maps to the AWS key\_name concept, but OCI injects the key material directly<br/>rather than using named key pairs. | `string` | `null` | no |
@@ -240,7 +244,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-| ---- | ----------- |
+|------|-------------|
 | <a name="output_availability_domain"></a> [availability\_domain](#output\_availability\_domain) | The availability domain name where the instance was placed |
 | <a name="output_block_volume_attachments"></a> [block\_volume\_attachments](#output\_block\_volume\_attachments) | Map of block volume name to volume attachment attributes |
 | <a name="output_block_volumes"></a> [block\_volumes](#output\_block\_volumes) | Map of block volume name to attributes: {id, availability\_domain, size\_in\_gbs} |
@@ -259,6 +263,8 @@ No modules.
 | <a name="output_reserved_public_ip"></a> [reserved\_public\_ip](#output\_reserved\_public\_ip) | All attributes of the reserved public IP resource. Null when create\_reserved\_public\_ip = false |
 | <a name="output_reserved_public_ip_address"></a> [reserved\_public\_ip\_address](#output\_reserved\_public\_ip\_address) | The reserved public IP address string. Null when not created |
 | <a name="output_resolved_availability_domain"></a> [resolved\_availability\_domain](#output\_resolved\_availability\_domain) | The resolved availability domain name (e.g. "abCD:US-ASHBURN-AD-1") |
+| <a name="output_secondary_network_interfaces"></a> [secondary\_network\_interfaces](#output\_secondary\_network\_interfaces) | Map of secondary network interface name to resolved attributes: {vnic\_id, nic\_index, private\_ip, public\_ip, mac\_address} |
+| <a name="output_secondary_vnic_attachments"></a> [secondary\_vnic\_attachments](#output\_secondary\_vnic\_attachments) | Map of secondary network interface name to VNIC attachment attributes (full object, auto-updating) |
 | <a name="output_shape"></a> [shape](#output\_shape) | The shape of the instance |
 | <a name="output_state"></a> [state](#output\_state) | The current state of the instance (RUNNING, STOPPED, TERMINATED, etc.) |
 <!-- END_TF_DOCS -->

@@ -37,7 +37,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
+# Image - latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
 ################################################################################
 
 data "oci_core_images" "oracle_linux" {
@@ -61,7 +61,7 @@ module "instance" {
 
   source_id = data.oci_core_images.oracle_linux.images[0].id
 
-  # Shape — VM.Standard.E4.Flex with 1 OCPU / 8 GB RAM
+  # Shape - VM.Standard.E4.Flex with 1 OCPU / 8 GB RAM
   shape = "VM.Standard.E4.Flex"
   shape_config = {
     ocpus         = 1
@@ -70,7 +70,7 @@ module "instance" {
 
   availability_domain = 1
 
-  # Networking — private subnet from VCN module
+  # Networking - private subnet from VCN module
   subnet_id = module.vcn.private_subnets[0]
 
   ssh_authorized_keys = var.ssh_public_key

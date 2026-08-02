@@ -15,7 +15,7 @@ locals {
   }
 }
 
-# Resolve AD name — required by the capacity reservation resource.
+# Resolve AD name - required by the capacity reservation resource.
 # The compute module handles this internally via availability_domain (integer);
 # here we need the string form for the oci_core_compute_capacity_reservation resource.
 data "oci_identity_availability_domains" "this" {
@@ -48,7 +48,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Oracle Linux 9 compatible with VM.Standard.E6.Flex
+# Image - latest Oracle Linux 9 compatible with VM.Standard.E6.Flex
 ################################################################################
 
 data "oci_core_images" "oracle_linux" {
@@ -86,7 +86,7 @@ resource "oci_core_compute_capacity_reservation" "this" {
 }
 
 ################################################################################
-# Compute Instance — launched into the capacity reservation
+# Compute Instance - launched into the capacity reservation
 ################################################################################
 
 module "instance" {
@@ -110,7 +110,7 @@ module "instance" {
 
   ssh_authorized_keys = var.ssh_public_key
 
-  # Target the capacity reservation — OCI will use the reserved slot instead of
+  # Target the capacity reservation - OCI will use the reserved slot instead of
   # consuming on-demand capacity. Maps to capacity_reservation_specification in AWS.
   capacity_reservation_id = oci_core_compute_capacity_reservation.this.id
 

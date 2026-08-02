@@ -2,8 +2,8 @@
 
 Configuration in this directory demonstrates the two flex shape modes available on OCI:
 
-- **Standard flex** — full OCPU baseline; maps to AWS general-purpose instance sizing
-- **Burstable flex** — 50% baseline OCPU utilization; maps to AWS T-series `cpu_credits = standard`
+- **Standard flex** - full OCPU baseline; maps to AWS general-purpose instance sizing
+- **Burstable flex** - 50% baseline OCPU utilization; maps to AWS T-series `cpu_credits = standard`
 
 Both instances share the same private subnet backed by a NAT gateway.
 

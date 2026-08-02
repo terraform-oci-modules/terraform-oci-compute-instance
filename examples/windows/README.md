@@ -4,8 +4,8 @@ Configuration in this directory creates a Windows Server compute instance with R
 
 Key differences from a Linux instance:
 
-- `is_windows_instance = true` — enables Windows credential retrieval via `instance_credentials` output
-- `assign_public_ip = true` — instance placed in a public subnet with IGW for RDP reachability
+- `is_windows_instance = true` - enables Windows credential retrieval via `instance_credentials` output
+- `assign_public_ip = true` - instance placed in a public subnet with IGW for RDP reachability
 - No SSH key required; OCI generates an initial Administrator password retrievable via the console or `instance_credentials` output
 - Boot volume backup policy set to silver
 

@@ -45,7 +45,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
+# Image - latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
 ################################################################################
 
 data "oci_core_images" "oracle_linux" {
@@ -58,7 +58,7 @@ data "oci_core_images" "oracle_linux" {
 }
 
 ################################################################################
-# Compute Instance Module — Complete example
+# Compute Instance Module - Complete example
 ################################################################################
 
 module "instance" {
@@ -70,7 +70,7 @@ module "instance" {
   source_id            = data.oci_core_images.oracle_linux.images[0].id
   ignore_image_changes = false
 
-  # Shape — 4 OCPU / 32 GB Flex
+  # Shape - 4 OCPU / 32 GB Flex
   shape = "VM.Standard.E4.Flex"
   shape_config = {
     ocpus         = 4
@@ -79,7 +79,7 @@ module "instance" {
 
   availability_domain = 1
 
-  # Networking — private subnet from VCN module
+  # Networking - private subnet from VCN module
   subnet_id         = module.vcn.private_subnets[0]
   assign_public_ip  = false
   source_dest_check = true
@@ -127,7 +127,7 @@ module "instance" {
     is_http_tokens_enabled = true
   }
 
-  # NSG — created by this module, attached to instance VNIC
+  # NSG - created by this module, attached to instance VNIC
   create_nsg = true
   nsg_vcn_id = module.vcn.vcn_id
   nsg_name   = "${local.name}-nsg"

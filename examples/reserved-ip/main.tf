@@ -16,7 +16,7 @@ locals {
 }
 
 ################################################################################
-# VCN (supporting resource) — public subnet so reserved IPs are reachable
+# VCN (supporting resource) - public subnet so reserved IPs are reachable
 ################################################################################
 
 module "vcn" {
@@ -35,7 +35,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
+# Image - latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
 ################################################################################
 
 data "oci_core_images" "oracle_linux" {
@@ -68,7 +68,7 @@ module "instance" {
   availability_domain = 1
   ssh_authorized_keys = var.ssh_public_key
 
-  # Create a reserved (static) public IP — survives instance replacement.
+  # Create a reserved (static) public IP - survives instance replacement.
   # Maps to create_eip = true in the AWS module.
   create_reserved_public_ip = true
   reserved_public_ip_tags = {

@@ -4,9 +4,9 @@ Configuration in this directory demonstrates attaching additional block volumes 
 
 Three volume attachment types are shown:
 
-- **Paravirtualized** — highest throughput, recommended for most workloads; silver backup policy
-- **Paravirtualized (gold)** — same attachment type with a more aggressive backup policy
-- **iSCSI** — network-attached block storage; requires manual discovery inside the OS
+- **Paravirtualized** - highest throughput, recommended for most workloads; silver backup policy
+- **Paravirtualized (gold)** - same attachment type with a more aggressive backup policy
+- **iSCSI** - network-attached block storage; requires manual discovery inside the OS
 
 Maps to `ebs_block_device` in the AWS module.
 

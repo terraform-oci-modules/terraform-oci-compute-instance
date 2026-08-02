@@ -295,6 +295,14 @@ variable "secondary_network_interface" {
     on bare metal shapes with multiple physical NICs). There is no OCI
     equivalent of AWS's device_index - the OS assigns VNIC device names.
 
+    This variable only attaches the VNIC at the infrastructure level; it does
+    not configure the guest OS. OCI does not run DHCP on secondary VNICs, so
+    the interface appears inside the instance (e.g. as ens5) with no IP
+    assigned until you configure it, typically with a static address matching
+    private_ip. On Oracle Linux images, run `sudo oci-network-config configure`
+    (from the preinstalled oci-utils package) to do this automatically; on
+    other distros, configure the interface manually (netplan, nmcli, etc.).
+
     Example:
       secondary_network_interface = {
         "eth1" = {

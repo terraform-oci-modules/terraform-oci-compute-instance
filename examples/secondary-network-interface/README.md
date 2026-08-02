@@ -4,6 +4,22 @@ Configuration in this directory demonstrates attaching a secondary VNIC to an in
 
 An instance is launched with its primary VNIC in one private subnet, then a second VNIC is attached into a separate subnet via `oci_core_vnic_attachment`.
 
+## Post-launch OS configuration
+
+This example (and the `secondary_network_interface` variable in general) only attaches the VNIC
+at the infrastructure level. OCI does not run DHCP on secondary VNICs, so after apply the second
+interface exists inside the instance (e.g. as `ens5`) but has no IP address and is down.
+
+On Oracle Linux, bring it up with the preinstalled `oci-utils` package:
+
+```bash
+sudo oci-network-config configure
+```
+
+On other distros, configure the interface manually with a static address matching the VNIC's
+assigned private IP (see the `secondary_network_interfaces` output for the resolved address) -
+DHCP will not work even if the OS attempts it.
+
 ## Usage
 
 To run this example you need to execute:

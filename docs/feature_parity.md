@@ -108,6 +108,13 @@ make the interface feel familiar to users coming from the AWS module, while bein
 > secondary VNIC is attached. Implemented directly in `compute-secondary-vnic.tf` (not a submodule),
 > matching the flat-file pattern used by `compute-nsg.tf` and `compute-volumes.tf`.
 >
+> Neither module configures the guest OS: attaching a secondary VNIC only makes it visible to the
+> instance as a device (e.g. `ens5`). OCI does not run DHCP on secondary VNICs, so it stays down
+> and unaddressed until the OS is configured, typically via `oci-network-config` (Oracle Linux,
+> preinstalled `oci-utils`) or a manual static-IP config on other distros. This is analogous to how
+> block volumes (§8) attach as a raw block device that still needs partitioning/formatting/mounting
+> at the OS level, out of scope for both this module and the AWS one.
+>
 > **Hostname label**: OCI injects a DNS label directly on the VNIC at launch time
 > (e.g. `"myhost"` → `myhost.subnet.vcn.oraclevcn.com`). AWS private DNS is managed
 > at the VPC level via `private_dns_name_options`.

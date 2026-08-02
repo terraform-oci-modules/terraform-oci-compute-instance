@@ -146,14 +146,14 @@ This is an independent community module and is **not affiliated with, endorsed b
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
 | <a name="requirement_oci"></a> [oci](#requirement\_oci) | >= 6.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_oci"></a> [oci](#provider\_oci) | >= 6.0 |
 
 ## Modules
@@ -163,7 +163,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [oci_core_instance.ignore_image](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance) | resource |
 | [oci_core_instance.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance) | resource |
 | [oci_core_network_security_group.this](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_network_security_group) | resource |
@@ -185,7 +185,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_are_all_plugins_disabled"></a> [are\_all\_plugins\_disabled](#input\_are\_all\_plugins\_disabled) | Whether to disable all cloud agent plugins. When true, overrides individual plugin settings | `bool` | `false` | no |
 | <a name="input_assign_ipv6ip"></a> [assign\_ipv6ip](#input\_assign\_ipv6ip) | Whether to auto-assign an IPv6 address from the subnet's IPv6 CIDR pool.<br/>Maps to ipv6\_addresses / ipv6\_address\_count in the AWS module.<br/>Requires the subnet (and VCN) to have IPv6 enabled. When true and<br/>ipv6address\_ipv6subnet\_cidr\_pair\_details is empty, OCI picks an address<br/>automatically from each IPv6-enabled subnet CIDR associated with the VNIC.<br/>When false (default), no IPv6 address is assigned. | `bool` | `false` | no |
 | <a name="input_assign_public_ip"></a> [assign\_public\_ip](#input\_assign\_public\_ip) | Whether to assign an ephemeral public IP to the primary VNIC.<br/>Maps to associate\_public\_ip\_address in AWS.<br/>For a stable public IP, use create\_reserved\_public\_ip instead. | `bool` | `false` | no |
@@ -244,7 +244,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_availability_domain"></a> [availability\_domain](#output\_availability\_domain) | The availability domain name where the instance was placed |
 | <a name="output_block_volume_attachments"></a> [block\_volume\_attachments](#output\_block\_volume\_attachments) | Map of block volume name to volume attachment attributes |
 | <a name="output_block_volumes"></a> [block\_volumes](#output\_block\_volumes) | Map of block volume name to attributes: {id, availability\_domain, size\_in\_gbs} |

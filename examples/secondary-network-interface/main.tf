@@ -3,7 +3,7 @@ provider "oci" {
 }
 
 locals {
-  name   = "ex-simple"
+  name   = "ex-secondary-vnic"
   region = "us-ashburn-1"
 
   vcn_cidr = "10.0.0.0/16"
@@ -16,7 +16,7 @@ locals {
 }
 
 ################################################################################
-# VCN (supporting resource)
+# VCN (supporting resource - two private subnets: primary + data plane)
 ################################################################################
 
 module "vcn" {
@@ -27,7 +27,10 @@ module "vcn" {
   compartment_id = var.compartment_id
   vcn_cidr_block = local.vcn_cidr
 
-  private_subnets = [cidrsubnet(local.vcn_cidr, 4, 0)]
+  private_subnets = [
+    cidrsubnet(local.vcn_cidr, 4, 0),
+    cidrsubnet(local.vcn_cidr, 4, 1),
+  ]
 
   enable_nat_gateway     = true
   single_nat_gateway     = true
@@ -50,7 +53,7 @@ data "oci_core_images" "oracle_linux" {
 }
 
 ################################################################################
-# Compute Instance Module
+# Compute Instance - primary VNIC in one subnet, secondary VNIC in another
 ################################################################################
 
 module "instance" {
@@ -61,7 +64,6 @@ module "instance" {
 
   source_id = data.oci_core_images.oracle_linux.images[0].id
 
-  # Shape - VM.Standard.E4.Flex with 1 OCPU / 8 GB RAM
   shape = "VM.Standard.E4.Flex"
   shape_config = {
     ocpus         = 1
@@ -70,10 +72,19 @@ module "instance" {
 
   availability_domain = 1
 
-  # Networking - private subnet from VCN module
   subnet_id = module.vcn.private_subnets[0]
+
+  # Secondary VNIC attached to the second subnet after instance launch.
+  # Maps to secondary_network_interface in the AWS module.
+  secondary_network_interface = {
+    "data" = {
+      subnet_id = module.vcn.private_subnets[1]
+    }
+  }
 
   ssh_authorized_keys = var.ssh_public_key
 
   tags = local.tags
+
+  depends_on = [module.vcn]
 }

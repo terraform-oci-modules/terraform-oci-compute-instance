@@ -16,12 +16,12 @@ locals {
 }
 
 ################################################################################
-# VCN (supporting resource) — public subnet with IGW for RDP access
+# VCN (supporting resource) - public subnet with IGW for RDP access
 ################################################################################
 
 module "vcn" {
   source  = "terraform-oci-modules/vcn/oci"
-  version = "~> 0.5"
+  version = "~> 0.6"
 
   name           = local.name
   compartment_id = var.compartment_id
@@ -35,7 +35,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Windows Server 2022 Standard compatible with VM.Standard.E4.Flex
+# Image - latest Windows Server 2022 Standard compatible with VM.Standard.E4.Flex
 ################################################################################
 
 data "oci_core_images" "windows" {
@@ -48,7 +48,7 @@ data "oci_core_images" "windows" {
 }
 
 ################################################################################
-# Compute Instance Module — Windows example
+# Compute Instance Module - Windows example
 ################################################################################
 
 module "instance" {
@@ -59,7 +59,7 @@ module "instance" {
 
   source_id = data.oci_core_images.windows.images[0].id
 
-  # Shape — Windows requires at least 1 OCPU and 8 GB RAM
+  # Shape - Windows requires at least 1 OCPU and 8 GB RAM
   shape = "VM.Standard.E4.Flex"
   shape_config = {
     ocpus         = 2
@@ -72,16 +72,16 @@ module "instance" {
   subnet_id        = module.vcn.public_subnets[0]
   assign_public_ip = true
 
-  # Windows instance flag — enables credential data source fetch.
+  # Windows instance flag - enables credential data source fetch.
   # Maps to get_password_data = true in AWS.
   is_windows_instance = true
 
-  # Boot volume — Windows benefits from higher performance storage
+  # Boot volume - Windows benefits from higher performance storage
   boot_volume_size_in_gbs   = 256
   boot_volume_vpus_per_gb   = 20
   boot_volume_backup_policy = "silver"
 
-  # Windows does not support the Run Command plugin — omit it entirely.
+  # Windows does not support the Run Command plugin - omit it entirely.
   cloud_agent_plugins = {
     monitoring = "ENABLED"
     bastion    = "DISABLED"

@@ -21,7 +21,7 @@ locals {
 
 module "vcn" {
   source  = "terraform-oci-modules/vcn/oci"
-  version = "~> 0.5"
+  version = "~> 0.6"
 
   name           = local.name
   compartment_id = var.compartment_id
@@ -37,7 +37,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
+# Image - latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
 ################################################################################
 
 data "oci_core_images" "oracle_linux" {
@@ -50,7 +50,7 @@ data "oci_core_images" "oracle_linux" {
 }
 
 ################################################################################
-# Compute Instance Module — Block Volumes example
+# Compute Instance Module - Block Volumes example
 ################################################################################
 
 module "instance" {
@@ -70,9 +70,9 @@ module "instance" {
   availability_domain = 1
   ssh_authorized_keys = var.ssh_public_key
 
-  # Block volumes — maps to ebs_block_device in AWS
+  # Block volumes - maps to ebs_block_device in AWS
   block_volumes = {
-    # Paravirtualized — simplest attachment, no manual OS-level setup
+    # Paravirtualized - simplest attachment, no manual OS-level setup
     "data" = {
       size_in_gbs     = 500
       vpus_per_gb     = 20 # Higher performance
@@ -86,7 +86,7 @@ module "instance" {
       vpus_per_gb     = 0 # Lower Cost tier
       attachment_type = "paravirtualized"
     }
-    # iSCSI — required for some performance-sensitive or bare metal workloads
+    # iSCSI - required for some performance-sensitive or bare metal workloads
     "database" = {
       size_in_gbs     = 1000
       vpus_per_gb     = 30 # Ultra High Performance

@@ -21,7 +21,7 @@ locals {
 
 module "vcn" {
   source  = "terraform-oci-modules/vcn/oci"
-  version = "~> 0.5"
+  version = "~> 0.6"
 
   name           = local.name
   compartment_id = var.compartment_id
@@ -37,7 +37,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
+# Image - latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
 ################################################################################
 
 data "oci_core_images" "oracle_linux" {
@@ -73,7 +73,7 @@ module "standard_flex" {
 }
 
 ################################################################################
-# Burstable Flex Shape — 50% baseline (maps to AWS t-series cpu_credits=standard)
+# Burstable Flex Shape - 50% baseline (maps to AWS t-series cpu_credits=standard)
 ################################################################################
 
 module "burstable_flex" {
@@ -96,7 +96,7 @@ module "burstable_flex" {
 }
 
 ################################################################################
-# Micro Burstable — 12.5% baseline (smallest burstable tier)
+# Micro Burstable - 12.5% baseline (smallest burstable tier)
 ################################################################################
 
 module "micro_flex" {

@@ -5,7 +5,7 @@ locals {
   availability_domains = data.oci_identity_availability_domains.this.availability_domains
   availability_domain  = local.availability_domains[var.availability_domain - 1].name
 
-  # Flex shape detection — shapes ending in ".Flex" require shape_config block.
+  # Flex shape detection - shapes ending in ".Flex" require shape_config block.
   shape_is_flex = can(regex("\\.Flex$", var.shape))
 
   # Merged NSG list: user-supplied existing NSGs + the NSG created by this module.
@@ -14,7 +14,7 @@ locals {
     var.create_nsg ? [oci_core_network_security_group.this[0].id] : []
   ))
 
-  # Canonical instance reference — works whether lifecycle ignore or not.
+  # Canonical instance reference - works whether lifecycle ignore or not.
   instance = try(
     oci_core_instance.ignore_image[0],
     oci_core_instance.this[0],
@@ -59,7 +59,7 @@ data "oci_identity_availability_domains" "this" {
   compartment_id = var.compartment_id
 }
 
-# VNIC attachments — needed to look up primary VNIC details (public IP, VNIC ID).
+# VNIC attachments - needed to look up primary VNIC details (public IP, VNIC ID).
 data "oci_core_vnic_attachments" "this" {
   count = local.create ? 1 : 0
 
@@ -73,7 +73,7 @@ data "oci_core_vnic_attachments" "this" {
   ]
 }
 
-# Primary private IP — required to attach a reserved public IP to the VNIC.
+# Primary private IP - required to attach a reserved public IP to the VNIC.
 data "oci_core_private_ips" "this" {
   count = local.create && var.create_reserved_public_ip ? 1 : 0
 
@@ -95,7 +95,7 @@ data "oci_core_instance_credentials" "this" {
 }
 
 ################################################################################
-# Instance — standard (tracks image changes)
+# Instance - standard (tracks image changes)
 ################################################################################
 
 resource "oci_core_instance" "this" {
@@ -209,7 +209,7 @@ resource "oci_core_instance" "this" {
 }
 
 ################################################################################
-# Instance — ignore image/source changes (maps to ignore_ami_changes)
+# Instance - ignore image/source changes (maps to ignore_ami_changes)
 ################################################################################
 
 resource "oci_core_instance" "ignore_image" {

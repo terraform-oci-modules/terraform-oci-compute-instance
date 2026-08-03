@@ -4,9 +4,9 @@ Configuration in this directory demonstrates attaching additional block volumes 
 
 Three volume attachment types are shown:
 
-- **Paravirtualized** — highest throughput, recommended for most workloads; silver backup policy
-- **Paravirtualized (gold)** — same attachment type with a more aggressive backup policy
-- **iSCSI** — network-attached block storage; requires manual discovery inside the OS
+- **Paravirtualized** - highest throughput, recommended for most workloads; silver backup policy
+- **Paravirtualized (gold)** - same attachment type with a more aggressive backup policy
+- **iSCSI** - network-attached block storage; requires manual discovery inside the OS
 
 Maps to `ebs_block_device` in the AWS module.
 
@@ -41,7 +41,7 @@ Note that this example may create resources which can cost money. Run `terraform
 | Name | Source | Version |
 | ---- | ------ | ------- |
 | <a name="module_instance"></a> [instance](#module\_instance) | ../../ | n/a |
-| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.5 |
+| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.6 |
 
 ## Resources
 

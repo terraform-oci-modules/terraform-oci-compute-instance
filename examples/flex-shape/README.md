@@ -2,8 +2,8 @@
 
 Configuration in this directory demonstrates the two flex shape modes available on OCI:
 
-- **Standard flex** — full OCPU baseline; maps to AWS general-purpose instance sizing
-- **Burstable flex** — 50% baseline OCPU utilization; maps to AWS T-series `cpu_credits = standard`
+- **Standard flex** - full OCPU baseline; maps to AWS general-purpose instance sizing
+- **Burstable flex** - 50% baseline OCPU utilization; maps to AWS T-series `cpu_credits = standard`
 
 Both instances share the same private subnet backed by a NAT gateway.
 
@@ -40,7 +40,7 @@ Note that this example may create resources which can cost money. Run `terraform
 | <a name="module_burstable_flex"></a> [burstable\_flex](#module\_burstable\_flex) | ../../ | n/a |
 | <a name="module_micro_flex"></a> [micro\_flex](#module\_micro\_flex) | ../../ | n/a |
 | <a name="module_standard_flex"></a> [standard\_flex](#module\_standard\_flex) | ../../ | n/a |
-| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.5 |
+| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.6 |
 
 ## Resources
 

@@ -43,7 +43,7 @@ __pycache__/
 .DS_Store
 .idea
 
-# OCI API key credentials — never commit private keys
+# OCI API key credentials - never commit private keys
 oci_api_key*.pem
 *.pem
 

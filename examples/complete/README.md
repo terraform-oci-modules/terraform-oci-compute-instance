@@ -4,15 +4,15 @@ Configuration in this directory demonstrates a production-style compute instance
 
 What this example covers:
 
-- **Flex shape** — 4 OCPU / 32 GB RAM (`VM.Standard.E4.Flex`)
-- **Custom boot volume** — 100 GB, 20 VPU/s (Balanced), silver backup policy
-- **Block volumes** — one balanced paravirtualized data volume (500 GB) and one archive volume (100 GB)
-- **cloud-init user data** — base64-encoded startup script
-- **Extended metadata** — arbitrary key-value pairs attached to the instance
-- **Cloud agent plugins** — fine-grained control: monitoring, bastion, run-command, OSMS, and vulnerability scanning enabled; management and block-volume-mgmt disabled
-- **IMDSv2 enforcement** — `metadata_options.is_http_tokens_enabled = true`
-- **Network security group** — module-managed NSG with SSH and HTTP ingress rules
-- **Preserve boot volume** — boot volume retained on instance termination
+- **Flex shape** - 4 OCPU / 32 GB RAM (`VM.Standard.E4.Flex`)
+- **Custom boot volume** - 100 GB, 20 VPU/s (Balanced), silver backup policy
+- **Block volumes** - one balanced paravirtualized data volume (500 GB) and one archive volume (100 GB)
+- **cloud-init user data** - base64-encoded startup script
+- **Extended metadata** - arbitrary key-value pairs attached to the instance
+- **Cloud agent plugins** - fine-grained control: monitoring, bastion, run-command, OSMS, and vulnerability scanning enabled; management and block-volume-mgmt disabled
+- **IMDSv2 enforcement** - `metadata_options.is_http_tokens_enabled = true`
+- **Network security group** - module-managed NSG with SSH and HTTP ingress rules
+- **Preserve boot volume** - boot volume retained on instance termination
 
 ## Usage
 
@@ -45,7 +45,7 @@ Note that this example may create resources which can cost money. Run `terraform
 | Name | Source | Version |
 | ---- | ------ | ------- |
 | <a name="module_instance"></a> [instance](#module\_instance) | ../../ | n/a |
-| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.5 |
+| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.6 |
 
 ## Resources
 

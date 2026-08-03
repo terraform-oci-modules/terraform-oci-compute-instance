@@ -16,16 +16,16 @@ locals {
 }
 
 ################################################################################
-# VCN (supporting resource — IPv6 enabled)
+# VCN (supporting resource - IPv6 enabled)
 #
 # enable_ipv6 = true causes OCI to assign a /56 prefix and the module
-# automatically derives a /64 for every subnet. Single apply — no manual CIDR
+# automatically derives a /64 for every subnet. Single apply - no manual CIDR
 # input and no -target step required.
 ################################################################################
 
 module "vcn" {
   source  = "terraform-oci-modules/vcn/oci"
-  version = "~> 0.5"
+  version = "~> 0.6"
 
   name           = local.name
   compartment_id = var.compartment_id
@@ -40,7 +40,7 @@ module "vcn" {
 }
 
 ################################################################################
-# Image — latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
+# Image - latest Oracle Linux 9 compatible with VM.Standard.E4.Flex
 ################################################################################
 
 data "oci_core_images" "oracle_linux" {
@@ -53,7 +53,7 @@ data "oci_core_images" "oracle_linux" {
 }
 
 ################################################################################
-# Compute Instance — dual-stack (public IPv4 + auto-assigned IPv6)
+# Compute Instance - dual-stack (public IPv4 + auto-assigned IPv6)
 ################################################################################
 
 module "instance" {

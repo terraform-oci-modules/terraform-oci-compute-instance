@@ -59,6 +59,7 @@ module "wrapper" {
   preserve_boot_volume        = try(each.value.preserve_boot_volume, var.defaults.preserve_boot_volume, false)
   private_ip                  = try(each.value.private_ip, var.defaults.private_ip, null)
   reserved_public_ip_tags     = try(each.value.reserved_public_ip_tags, var.defaults.reserved_public_ip_tags, {})
+  secondary_network_interface = try(each.value.secondary_network_interface, var.defaults.secondary_network_interface, {})
   shape                       = try(each.value.shape, var.defaults.shape, "VM.Standard.E4.Flex")
   shape_config                = try(each.value.shape_config, var.defaults.shape_config, {})
   source_dest_check           = try(each.value.source_dest_check, var.defaults.source_dest_check, true)

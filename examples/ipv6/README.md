@@ -6,7 +6,7 @@ The VCN is created with `enable_ipv6 = true`. OCI assigns a /56 IPv6 prefix to t
 
 ## Usage
 
-**Step 1** — create the VCN and retrieve the assigned IPv6 prefix:
+**Step 1** - create the VCN and retrieve the assigned IPv6 prefix:
 
 ```bash
 $ terraform init
@@ -14,7 +14,7 @@ $ terraform apply -target=module.vcn
 $ terraform output vcn_ipv6_cidr_block
 ```
 
-**Step 2** — set the prefix in `terraform.tfvars`, then apply the rest:
+**Step 2** - set the prefix in `terraform.tfvars`, then apply the rest:
 
 ```hcl
 # terraform.tfvars
@@ -46,7 +46,7 @@ Note that this example may create resources which can cost money. Run `terraform
 | Name | Source | Version |
 | ---- | ------ | ------- |
 | <a name="module_instance"></a> [instance](#module\_instance) | ../../ | n/a |
-| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.5 |
+| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.6 |
 
 ## Resources
 

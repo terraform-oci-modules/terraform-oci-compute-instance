@@ -4,8 +4,8 @@ Configuration in this directory creates a Windows Server compute instance with R
 
 Key differences from a Linux instance:
 
-- `is_windows_instance = true` — enables Windows credential retrieval via `instance_credentials` output
-- `assign_public_ip = true` — instance placed in a public subnet with IGW for RDP reachability
+- `is_windows_instance = true` - enables Windows credential retrieval via `instance_credentials` output
+- `assign_public_ip = true` - instance placed in a public subnet with IGW for RDP reachability
 - No SSH key required; OCI generates an initial Administrator password retrievable via the console or `instance_credentials` output
 - Boot volume backup policy set to silver
 
@@ -42,7 +42,7 @@ Note that this example may create resources which can cost money. Run `terraform
 | Name | Source | Version |
 | ---- | ------ | ------- |
 | <a name="module_instance"></a> [instance](#module\_instance) | ../../ | n/a |
-| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.5 |
+| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.6 |
 
 ## Resources
 

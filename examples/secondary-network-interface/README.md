@@ -1,8 +1,24 @@
-# Simple Compute Instance
+# Secondary Network Interface
 
-Configuration in this directory creates a minimal OCI compute instance suitable for getting started or development environments.
+Configuration in this directory demonstrates attaching a secondary VNIC to an instance after launch, in addition to its primary VNIC. Maps to `secondary_network_interface` in the AWS EC2 instance module.
 
-A VM.Standard.E4.Flex instance is launched into a private subnet, with a NAT gateway providing outbound internet access.
+An instance is launched with its primary VNIC in one private subnet, then a second VNIC is attached into a separate subnet via `oci_core_vnic_attachment`.
+
+## Post-launch OS configuration
+
+This example (and the `secondary_network_interface` variable in general) only attaches the VNIC
+at the infrastructure level. OCI does not run DHCP on secondary VNICs, so after apply the second
+interface exists inside the instance (e.g. as `ens5`) but has no IP address and is down.
+
+On Oracle Linux, bring it up with the preinstalled `oci-utils` package:
+
+```bash
+sudo oci-network-config configure
+```
+
+On other distros, configure the interface manually with a static address matching the VNIC's
+assigned private IP (see the `secondary_network_interfaces` output for the resolved address) -
+DHCP will not work even if the OS attempts it.
 
 ## Usage
 
@@ -54,9 +70,9 @@ Note that this example may create resources which can cost money. Run `terraform
 
 | Name | Description |
 | ---- | ----------- |
-| <a name="output_availability_domain"></a> [availability\_domain](#output\_availability\_domain) | The availability domain where the instance was placed |
 | <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id) | The OCID of the instance |
-| <a name="output_private_ip"></a> [private\_ip](#output\_private\_ip) | The private IP address of the instance |
-| <a name="output_private_subnet_id"></a> [private\_subnet\_id](#output\_private\_subnet\_id) | The OCID of the private subnet the instance was placed in |
+| <a name="output_primary_private_ip"></a> [primary\_private\_ip](#output\_primary\_private\_ip) | The private IP address of the primary VNIC |
+| <a name="output_private_subnet_ids"></a> [private\_subnet\_ids](#output\_private\_subnet\_ids) | The OCIDs of the private subnets |
+| <a name="output_secondary_network_interfaces"></a> [secondary\_network\_interfaces](#output\_secondary\_network\_interfaces) | Resolved attributes of the secondary VNICs: {vnic\_id, nic\_index, private\_ip, public\_ip, mac\_address} |
 | <a name="output_vcn_id"></a> [vcn\_id](#output\_vcn\_id) | The OCID of the VCN |
 <!-- END_TF_DOCS -->

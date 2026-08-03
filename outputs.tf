@@ -97,6 +97,29 @@ output "block_volume_attachments" {
 }
 
 ################################################################################
+# Secondary Network Interfaces
+################################################################################
+
+output "secondary_vnic_attachments" {
+  description = "Map of secondary network interface name to VNIC attachment attributes (full object, auto-updating)"
+  value       = { for k, v in oci_core_vnic_attachment.this : k => v }
+}
+
+output "secondary_network_interfaces" {
+  description = "Map of secondary network interface name to resolved attributes: {vnic_id, nic_index, private_ip, public_ip, mac_address}"
+  value = {
+    for k, v in oci_core_vnic_attachment.this :
+    k => {
+      vnic_id     = v.vnic_id
+      nic_index   = v.nic_index
+      private_ip  = try(data.oci_core_vnic.secondary[k].private_ip_address, null)
+      public_ip   = try(data.oci_core_vnic.secondary[k].public_ip_address, null)
+      mac_address = try(data.oci_core_vnic.secondary[k].mac_address, null)
+    }
+  }
+}
+
+################################################################################
 # Reserved Public IP
 ################################################################################
 

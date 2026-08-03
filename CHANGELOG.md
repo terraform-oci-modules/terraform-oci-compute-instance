@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.1.0...v0.2.0) (2026-08-03)
+
+### Features
+
+* Add secondary_network_interface support ([#1](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/issues/1)) ([e906b81](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/commit/e906b811827850b53ce5e28406ed1b96cf04d3c8))
+
 ## [0.1.0](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.0.0...v0.1.0) (2026-05-26)
 
 ### Features

@@ -28,7 +28,7 @@ locals {
 
 module "vcn" {
   source  = "terraform-oci-modules/vcn/oci"
-  version = "~> 0.6"
+  version = "~> 0.7"
 
   name           = local.name
   compartment_id = var.compartment_id

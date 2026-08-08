@@ -2,14 +2,14 @@
 
 Terraform module which creates Compute Instance resources on Oracle Cloud Infrastructure (OCI).
 
-Designed to be familiar to users of the [terraform-aws-modules/ec2-instance/aws](https://github.com/terraform-aws-modules/terraform-aws-ec2-instance) module - same variable naming conventions, same file structure, same developer experience.
+Designed to be familiar to users of the [terraform-aws-modules/ec2-instance/aws](https://github.com/terraform-aws-modules/terraform-aws-ec2-instance) module: the same variable names where the concept is shared, the same file structure, with OCI resource names where the two clouds differ. See [docs/feature_parity.md](docs/feature_parity.md) for the full mapping.
 
 ## Usage
 
 ```hcl
 module "instance" {
   source  = "terraform-oci-modules/compute-instance/oci"
-  version = "~> 0.1"
+  version = "~> 0.2"
 
   name           = "my-instance"
   compartment_id = var.compartment_id
@@ -192,7 +192,7 @@ No modules.
 | <a name="input_availability_domain"></a> [availability\_domain](#input\_availability\_domain) | Availability domain number (1, 2, or 3) where the instance will be placed.<br/>The module resolves the number to the tenancy-specific AD name automatically.<br/>Maps to the AWS availability\_zone concept. | `number` | `1` | no |
 | <a name="input_block_volumes"></a> [block\_volumes](#input\_block\_volumes) | Map of block volumes to create and attach to the instance. Maps to<br/>ebs\_block\_device in AWS. Each key becomes part of the volume display\_name.<br/><br/>Example:<br/>  block\_volumes = {<br/>    "data" = {<br/>      size\_in\_gbs     = 100<br/>      vpus\_per\_gb     = 10          # 0=low, 10=balanced, 20=high<br/>      backup\_policy   = "bronze"    # "gold"/"silver"/"bronze"/"disabled"<br/>      attachment\_type = "paravirtualized"  # or "iscsi"<br/>      encryption\_key\_id = null      # KMS key OCID or null<br/>      tags         = {}<br/>      defined\_tags = {}<br/>    }<br/>  } | <pre>map(object({<br/>    size_in_gbs       = number<br/>    vpus_per_gb       = optional(number, 10)<br/>    backup_policy     = optional(string, "disabled")<br/>    attachment_type   = optional(string, "paravirtualized")<br/>    encryption_key_id = optional(string)<br/>    tags              = optional(map(string), {})<br/>    defined_tags      = optional(map(string), {})<br/>  }))</pre> | `{}` | no |
 | <a name="input_boot_volume_backup_policy"></a> [boot\_volume\_backup\_policy](#input\_boot\_volume\_backup\_policy) | OCI predefined backup policy to assign to the boot volume.<br/>"gold"     → daily, weekly, monthly and yearly backups (longest retention)<br/>"silver"   → daily and weekly backups<br/>"bronze"   → monthly and yearly backups<br/>"disabled" → no backup policy assigned (default) | `string` | `"disabled"` | no |
-| <a name="input_boot_volume_encryption_key_id"></a> [boot\_volume\_encryption\_key\_id](#input\_boot\_volume\_encryption\_key\_id) | OCID of the KMS key to use for boot volume encryption. When null, OCI-managed encryption is used. Maps to root\_block\_device.kms\_key\_id in AWS | `string` | `null` | no |
+| <a name="input_boot_volume_kms_key_id"></a> [boot\_volume\_kms\_key\_id](#input\_boot\_volume\_kms\_key\_id) | OCID of the KMS key to use for boot volume encryption. When null, OCI-managed encryption is used. Maps to root\_block\_device.kms\_key\_id in AWS | `string` | `null` | no |
 | <a name="input_boot_volume_size_in_gbs"></a> [boot\_volume\_size\_in\_gbs](#input\_boot\_volume\_size\_in\_gbs) | The size of the boot volume in GBs. When null, defaults to the image's minimum size. Maps to root\_block\_device.volume\_size in AWS | `number` | `null` | no |
 | <a name="input_boot_volume_vpus_per_gb"></a> [boot\_volume\_vpus\_per\_gb](#input\_boot\_volume\_vpus\_per\_gb) | Performance level for the boot volume in VPUs per GB:<br/>  0   → Lower Cost (low iops, good for dev/test)<br/>  10  → Balanced (default - general purpose)<br/>  20  → Higher Performance<br/>  30+ → Ultra High Performance (30-120, increments of 10)<br/>Maps to root\_block\_device.iops (indirectly) in AWS. | `number` | `null` | no |
 | <a name="input_capacity_reservation_id"></a> [capacity\_reservation\_id](#input\_capacity\_reservation\_id) | OCID of a compute capacity reservation to launch this instance into.<br/>Maps to capacity\_reservation\_specification in the AWS module.<br/><br/>When set, OCI guarantees that the required compute capacity exists before<br/>the instance is launched. The instance shape and shape\_config must match<br/>the instance\_reservation\_configs defined on the reservation.<br/><br/>When null (default), the instance is launched without targeting a reservation. | `string` | `null` | no |

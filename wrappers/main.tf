@@ -9,7 +9,7 @@ module "wrapper" {
   availability_domain                      = try(each.value.availability_domain, var.defaults.availability_domain, 1)
   block_volumes                            = try(each.value.block_volumes, var.defaults.block_volumes, {})
   boot_volume_backup_policy                = try(each.value.boot_volume_backup_policy, var.defaults.boot_volume_backup_policy, "disabled")
-  boot_volume_encryption_key_id            = try(each.value.boot_volume_encryption_key_id, var.defaults.boot_volume_encryption_key_id, null)
+  boot_volume_kms_key_id                   = try(each.value.boot_volume_kms_key_id, var.defaults.boot_volume_kms_key_id, null)
   boot_volume_size_in_gbs                  = try(each.value.boot_volume_size_in_gbs, var.defaults.boot_volume_size_in_gbs, null)
   boot_volume_vpus_per_gb                  = try(each.value.boot_volume_vpus_per_gb, var.defaults.boot_volume_vpus_per_gb, null)
   capacity_reservation_id                  = try(each.value.capacity_reservation_id, var.defaults.capacity_reservation_id, null)

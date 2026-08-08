@@ -406,7 +406,7 @@ variable "preserve_boot_volume" {
   default     = false
 }
 
-variable "boot_volume_encryption_key_id" {
+variable "boot_volume_kms_key_id" {
   description = "OCID of the KMS key to use for boot volume encryption. When null, OCI-managed encryption is used. Maps to root_block_device.kms_key_id in AWS"
   type        = string
   default     = null

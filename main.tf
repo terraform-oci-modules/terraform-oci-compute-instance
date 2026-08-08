@@ -120,7 +120,7 @@ resource "oci_core_instance" "this" {
     source_type             = var.source_type
     boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
     boot_volume_vpus_per_gb = var.boot_volume_vpus_per_gb
-    kms_key_id              = var.boot_volume_encryption_key_id
+    kms_key_id              = var.boot_volume_kms_key_id
   }
 
   create_vnic_details {
@@ -234,7 +234,7 @@ resource "oci_core_instance" "ignore_image" {
     source_type             = var.source_type
     boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
     boot_volume_vpus_per_gb = var.boot_volume_vpus_per_gb
-    kms_key_id              = var.boot_volume_encryption_key_id
+    kms_key_id              = var.boot_volume_kms_key_id
   }
 
   create_vnic_details {

@@ -140,14 +140,14 @@ anything the OCI provider supports that this module does not expose yet.
 
 | Feature                    | AWS                                                      | OCI                                                               | Status                                                                                                   |
 | -------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Boot volume size           | `root_block_device.size`                                 | `boot_volume_size_in_gbs`                                         | mapped                                                                                                        |
-| Boot volume encryption key | `root_block_device.kms_key_id`                           | `boot_volume_kms_key_id`                                   | mapped                                                                                                        |
-| Delete on termination      | `root_block_device.delete_on_termination` (default true) | `preserve_boot_volume` (default false, inverted)                  | mapped                                                                                                        |
-| Performance (IOPS)         | `root_block_device.iops`                                 | `boot_volume_vpus_per_gb` (0/10/20/30-120)                        | mapped (see note)                                                                                       |
+| Boot volume size           | `root_block_device.size`                                 | `boot_volume.size_in_gbs`                                         | mapped                                                                                                        |
+| Boot volume encryption key | `root_block_device.kms_key_id`                           | `boot_volume.kms_key_id`                                   | mapped                                                                                                        |
+| Delete on termination      | `root_block_device.delete_on_termination` (default true) | `boot_volume.preserve` (default false, inverted)                  | mapped                                                                                                        |
+| Performance (IOPS)         | `root_block_device.iops`                                 | `boot_volume.vpus_per_gb` (0/10/20/30-120)                        | mapped (see note)                                                                                       |
 | Throughput                 | `root_block_device.throughput`                           | -                                                                 | n/a (VPU model covers this implicitly)                                                                   |
 | Volume type                | `root_block_device.type`                                 | -                                                                 | n/a (OCI has one volume type)                                                                            |
 | Volume tags                | `root_block_device.tags`                                 | -                                                                 | n/a (OCI boot volumes cannot be tagged at launch time; use `boot_volume_id` output to manage externally) |
-| Predefined backup policy   | -                                                        | `boot_volume_backup_policy` (`gold`/`silver`/`bronze`/`disabled`) | OCI-only                                                                                                 |
+| Predefined backup policy   | -                                                        | `boot_volume.backup_policy` (`gold`/`silver`/`bronze`/`disabled`) | OCI-only                                                                                                 |
 
 > **VPUs vs IOPS**: OCI uses a VPU (Volume Performance Units) model instead of explicit IOPS.
 > `0` = low cost, `10` = balanced (default), `20` = high performance, `30-120` = ultra high.
@@ -161,7 +161,7 @@ anything the OCI provider supports that this module does not expose yet.
 | ---------------------------- | ------------------------------------ | ------------------------------------------------------ | -------------------------------------------------------------- |
 | Additional volumes (map)     | `ebs_volumes`                        | `block_volumes`                                        | mapped                                                              |
 | Volume size                  | `.size`                              | `.size_in_gbs`                                         | mapped                                                              |
-| Encryption key               | `.kms_key_id`                        | `.encryption_key_id`                                   | mapped                                                              |
+| Encryption key               | `.kms_key_id`                        | `.kms_key_id`                                   | mapped                                                              |
 | Performance                  | `.iops` / `.throughput`              | `.vpus_per_gb`                                         | mapped (VPU model, see the boot volume section)                                          |
 | Attachment type              | -                                    | `.attachment_type` (`"paravirtualized"` \| `"iscsi"`)  | OCI-only                                                       |
 | Per-volume backup policy     | -                                    | `.backup_policy` (`gold`/`silver`/`bronze`/`disabled`) | OCI-only                                                       |
@@ -369,12 +369,13 @@ anything the OCI provider supports that this module does not expose yet.
 | `timeouts`                                   | `timeouts`                                 | Identical structure                     |
 | `tags`                                       | `tags`                                     | Identical                               |
 | `instance_tags`                              | `instance_tags`                            | Identical                               |
-| `root_block_device.size`                     | `boot_volume_size_in_gbs`                  | Boot volume size                        |
-| `root_block_device.kms_key_id`               | `boot_volume_kms_key_id`            | KMS encryption                          |
-| `root_block_device.delete_on_termination`    | `preserve_boot_volume`                     | Inverted                                |
-| `root_block_device.iops`                     | `boot_volume_vpus_per_gb`                  | Performance (VPU model)                 |
+| `root_block_device`                          | `boot_volume` (object)                     | Same shape: one object per volume       |
+| `root_block_device.size`                     | `boot_volume.size_in_gbs`                  | Boot volume size                        |
+| `root_block_device.kms_key_id`               | `boot_volume.kms_key_id`            | KMS encryption                          |
+| `root_block_device.delete_on_termination`    | `boot_volume.preserve`                     | Inverted                                |
+| `root_block_device.iops`                     | `boot_volume.vpus_per_gb`                  | Performance (VPU model)                 |
 | `ebs_volumes`                                | `block_volumes`                            | Additional volumes map                  |
-| `ebs_volumes[*].kms_key_id`                  | `block_volumes[*].encryption_key_id`       | Per-volume encryption                   |
+| `ebs_volumes[*].kms_key_id`                  | `block_volumes[*].kms_key_id`       | Per-volume encryption                   |
 | `ebs_volumes[*].size`                        | `block_volumes[*].size_in_gbs`             | Per-volume size                         |
 | `create_security_group`                      | `create_nsg`                               | Create network security group           |
 | `security_group_name`                        | `nsg_name`                                 | NSG name                                |
@@ -441,9 +442,9 @@ exposed by this module. They are the implementation backlog for AWS feature pari
 | `compartment_id`                         | Required OCI compartment scoping - no AWS concept                         |
 | `source_type`                            | `"image"` or `"boot_volume"` - boot volume as instance source             |
 | `shape_config.memory_in_gbs`             | Independent memory selection on Flex shapes                               |
-| `boot_volume_vpus_per_gb`                | VPU-based performance tiers (0/10/20/30-120)                              |
-| `boot_volume_backup_policy`              | Predefined backup policy (gold/silver/bronze/disabled)                    |
-| `preserve_boot_volume`                   | Keep boot volume on instance termination                                  |
+| `boot_volume.vpus_per_gb`                | VPU-based performance tiers (0/10/20/30-120)                              |
+| `boot_volume.backup_policy`              | Predefined backup policy (gold/silver/bronze/disabled)                    |
+| `boot_volume.preserve`                   | Keep boot volume on instance termination                                  |
 | `hostname_label`                         | DNS label in the subnet zone                                              |
 | `is_management_disabled`                 | Disable OCI Management Agent plugin                                       |
 | `are_all_plugins_disabled`               | Bulk-disable all cloud agent plugins                                      |

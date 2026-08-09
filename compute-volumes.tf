@@ -4,7 +4,7 @@
 
 data "oci_core_volume_backup_policies" "this" {
   count = local.create && (
-    var.boot_volume_backup_policy != "disabled" ||
+    var.boot_volume.backup_policy != "disabled" ||
     anytrue([for v in var.block_volumes : v.backup_policy != "disabled"])
   ) ? 1 : 0
 }
@@ -14,12 +14,12 @@ locals {
   # OCI ships three predefined policies: gold, silver, bronze.
   # The data source returns all available policies; we find ours by display_name.
   backup_policy_id = (
-    var.boot_volume_backup_policy == "disabled"
+    var.boot_volume.backup_policy == "disabled"
     ? null
     : try(
       [
         for p in data.oci_core_volume_backup_policies.this[0].volume_backup_policies :
-        p.id if lower(p.display_name) == var.boot_volume_backup_policy
+        p.id if lower(p.display_name) == var.boot_volume.backup_policy
       ][0],
       null
     )
@@ -51,7 +51,7 @@ resource "oci_core_volume" "this" {
 
   size_in_gbs = each.value.size_in_gbs
   vpus_per_gb = each.value.vpus_per_gb
-  kms_key_id  = each.value.encryption_key_id
+  kms_key_id  = each.value.kms_key_id
 
   freeform_tags = merge(
     { "Name" = "${var.name}-${each.key}" },

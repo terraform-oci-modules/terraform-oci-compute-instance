@@ -91,10 +91,12 @@ module "instance" {
   }
 
   # Boot volume
-  boot_volume_size_in_gbs   = 100
-  boot_volume_vpus_per_gb   = 20
-  boot_volume_backup_policy = "silver"
-  preserve_boot_volume      = false
+  boot_volume = {
+    size_in_gbs   = 100
+    vpus_per_gb   = 20
+    backup_policy = "silver"
+    preserve      = false
+  }
 
   # Block volumes
   block_volumes = {

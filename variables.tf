@@ -364,54 +364,39 @@ variable "extended_metadata" {
 # Boot Volume  (maps to root_block_device)
 ################################################################################
 
-variable "boot_volume_size_in_gbs" {
-  description = "The size of the boot volume in GBs. When null, defaults to the image's minimum size. Maps to root_block_device.volume_size in AWS"
-  type        = number
-  default     = null
-}
-
-variable "boot_volume_vpus_per_gb" {
+variable "boot_volume" {
   description = <<-EOT
-    Performance level for the boot volume in VPUs per GB:
-      0   → Lower Cost (low iops, good for dev/test)
-      10  → Balanced (default - general purpose)
-      20  → Higher Performance
-      30+ → Ultra High Performance (30-120, increments of 10)
-    Maps to root_block_device.iops (indirectly) in AWS.
-  EOT
-  type        = number
-  default     = null
-}
+    Boot volume settings. Maps to root_block_device in AWS.
 
-variable "boot_volume_backup_policy" {
-  description = <<-EOT
-    OCI predefined backup policy to assign to the boot volume.
-    "gold"     → daily, weekly, monthly and yearly backups (longest retention)
-    "silver"   → daily and weekly backups
-    "bronze"   → monthly and yearly backups
-    "disabled" → no backup policy assigned (default)
+      size_in_gbs   - Size in GBs. When null, the image's minimum size is used.
+      vpus_per_gb   - Performance level in VPUs per GB:
+                        0   Lower Cost (low iops, good for dev/test)
+                        10  Balanced (general purpose)
+                        20  Higher Performance
+                        30+ Ultra High Performance (30-120, increments of 10)
+      kms_key_id    - KMS key OCID used to encrypt the volume. When null, OCI-managed
+                      encryption is used.
+      backup_policy - OCI predefined backup policy: "gold" (daily, weekly, monthly and
+                      yearly), "silver" (daily and weekly), "bronze" (monthly and
+                      yearly), or "disabled".
+      preserve      - Keep the boot volume when the instance is terminated. Maps to
+                      root_block_device.delete_on_termination (inverted).
   EOT
-  type        = string
-  default     = "disabled"
+  type = object({
+    size_in_gbs   = optional(number)
+    vpus_per_gb   = optional(number)
+    kms_key_id    = optional(string)
+    backup_policy = optional(string, "disabled")
+    preserve      = optional(bool, false)
+  })
+  default  = {}
+  nullable = false
 
   validation {
-    condition     = contains(["gold", "silver", "bronze", "disabled"], var.boot_volume_backup_policy)
-    error_message = "boot_volume_backup_policy must be \"gold\", \"silver\", \"bronze\", or \"disabled\"."
+    condition     = contains(["gold", "silver", "bronze", "disabled"], var.boot_volume.backup_policy)
+    error_message = "boot_volume.backup_policy must be \"gold\", \"silver\", \"bronze\", or \"disabled\"."
   }
 }
-
-variable "preserve_boot_volume" {
-  description = "Whether to keep the boot volume when the instance is terminated. Maps to root_block_device.delete_on_termination (inverted) in AWS"
-  type        = bool
-  default     = false
-}
-
-variable "boot_volume_kms_key_id" {
-  description = "OCID of the KMS key to use for boot volume encryption. When null, OCI-managed encryption is used. Maps to root_block_device.kms_key_id in AWS"
-  type        = string
-  default     = null
-}
-
 
 ################################################################################
 # Block Volumes  (maps to ebs_block_device)
@@ -429,20 +414,20 @@ variable "block_volumes" {
           vpus_per_gb     = 10          # 0=low, 10=balanced, 20=high
           backup_policy   = "bronze"    # "gold"/"silver"/"bronze"/"disabled"
           attachment_type = "paravirtualized"  # or "iscsi"
-          encryption_key_id = null      # KMS key OCID or null
-          tags         = {}
-          defined_tags = {}
+          kms_key_id      = null        # KMS key OCID, or null for OCI-managed
+          tags            = {}
+          defined_tags    = {}
         }
       }
   EOT
   type = map(object({
-    size_in_gbs       = number
-    vpus_per_gb       = optional(number, 10)
-    backup_policy     = optional(string, "disabled")
-    attachment_type   = optional(string, "paravirtualized")
-    encryption_key_id = optional(string)
-    tags              = optional(map(string), {})
-    defined_tags      = optional(map(string), {})
+    size_in_gbs     = number
+    vpus_per_gb     = optional(number, 10)
+    backup_policy   = optional(string, "disabled")
+    attachment_type = optional(string, "paravirtualized")
+    kms_key_id      = optional(string)
+    tags            = optional(map(string), {})
+    defined_tags    = optional(map(string), {})
   }))
   default  = {}
   nullable = false

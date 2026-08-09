@@ -118,9 +118,9 @@ resource "oci_core_instance" "this" {
   source_details {
     source_id               = var.source_id
     source_type             = var.source_type
-    boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
-    boot_volume_vpus_per_gb = var.boot_volume_vpus_per_gb
-    kms_key_id              = var.boot_volume_encryption_key_id
+    boot_volume_size_in_gbs = var.boot_volume.size_in_gbs
+    boot_volume_vpus_per_gb = var.boot_volume.vpus_per_gb
+    kms_key_id              = var.boot_volume.kms_key_id
   }
 
   create_vnic_details {
@@ -189,7 +189,7 @@ resource "oci_core_instance" "this" {
   is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled
   ipxe_script                         = var.ipxe_script
   state                               = var.instance_state
-  preserve_boot_volume                = var.preserve_boot_volume
+  preserve_boot_volume                = var.boot_volume.preserve
 
   freeform_tags = local.instance_tags
   defined_tags  = local.instance_defined_tags
@@ -232,9 +232,9 @@ resource "oci_core_instance" "ignore_image" {
   source_details {
     source_id               = var.source_id
     source_type             = var.source_type
-    boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
-    boot_volume_vpus_per_gb = var.boot_volume_vpus_per_gb
-    kms_key_id              = var.boot_volume_encryption_key_id
+    boot_volume_size_in_gbs = var.boot_volume.size_in_gbs
+    boot_volume_vpus_per_gb = var.boot_volume.vpus_per_gb
+    kms_key_id              = var.boot_volume.kms_key_id
   }
 
   create_vnic_details {
@@ -303,7 +303,7 @@ resource "oci_core_instance" "ignore_image" {
   is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled
   ipxe_script                         = var.ipxe_script
   state                               = var.instance_state
-  preserve_boot_volume                = var.preserve_boot_volume
+  preserve_boot_volume                = var.boot_volume.preserve
 
   freeform_tags = local.instance_tags
   defined_tags  = local.instance_defined_tags

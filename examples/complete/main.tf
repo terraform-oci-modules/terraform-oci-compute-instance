@@ -28,7 +28,7 @@ locals {
 
 module "vcn" {
   source  = "terraform-oci-modules/vcn/oci"
-  version = "~> 0.6"
+  version = "~> 0.7"
 
   name           = local.name
   compartment_id = var.compartment_id
@@ -91,10 +91,12 @@ module "instance" {
   }
 
   # Boot volume
-  boot_volume_size_in_gbs   = 100
-  boot_volume_vpus_per_gb   = 20
-  boot_volume_backup_policy = "silver"
-  preserve_boot_volume      = false
+  boot_volume = {
+    size_in_gbs   = 100
+    vpus_per_gb   = 20
+    backup_policy = "silver"
+    preserve      = false
+  }
 
   # Block volumes
   block_volumes = {

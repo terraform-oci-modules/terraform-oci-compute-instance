@@ -45,7 +45,7 @@ Note that this example may create resources which can cost money. Run `terraform
 | Name | Source | Version |
 | ---- | ------ | ------- |
 | <a name="module_instance"></a> [instance](#module\_instance) | ../../ | n/a |
-| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.6 |
+| <a name="module_vcn"></a> [vcn](#module\_vcn) | terraform-oci-modules/vcn/oci | ~> 0.7 |
 
 ## Resources
 

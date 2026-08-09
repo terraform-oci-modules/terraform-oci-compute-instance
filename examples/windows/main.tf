@@ -21,7 +21,7 @@ locals {
 
 module "vcn" {
   source  = "terraform-oci-modules/vcn/oci"
-  version = "~> 0.6"
+  version = "~> 0.7"
 
   name           = local.name
   compartment_id = var.compartment_id
@@ -77,9 +77,11 @@ module "instance" {
   is_windows_instance = true
 
   # Boot volume - Windows benefits from higher performance storage
-  boot_volume_size_in_gbs   = 256
-  boot_volume_vpus_per_gb   = 20
-  boot_volume_backup_policy = "silver"
+  boot_volume = {
+    size_in_gbs   = 256
+    vpus_per_gb   = 20
+    backup_policy = "silver"
+  }
 
   # Windows does not support the Run Command plugin - omit it entirely.
   cloud_agent_plugins = {

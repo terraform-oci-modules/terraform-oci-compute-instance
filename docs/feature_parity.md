@@ -1,29 +1,21 @@
-# Feature Parity: OCI Compute Instance vs AWS EC2 Instance
+# EC2 to compute instance feature parity
 
-Comparison between this module (`terraform-oci-modules/compute-instance/oci`) and the
-reference AWS module (`terraform-aws-modules/ec2-instance/aws`).
+Comparison against [`terraform-aws-ec2-instance`](https://github.com/terraform-aws-modules/terraform-aws-ec2-instance)
+v6.4.0. This module maps each EC2 concept to its OCI equivalent. It is not a 1:1
+mapping: OCI and AWS compute primitives differ.
 
-The goal is not 1:1 mapping - OCI and AWS have fundamentally different primitives - but to
-make the interface feel familiar to users coming from the AWS module, while being idiomatic OCI.
-
-**Last verified against:** `terraform-aws-modules/ec2-instance/aws` v6.4.0 (2026-03-26), 2026-08-02.
-
-**Legend:**
-- ✅ Implemented
-- ⬜ Not yet implemented - OCI provider supports this; module doesn't expose it yet
-- N/A Not applicable to this cloud (architectural difference, not a gap)
-- OCI-only No AWS equivalent - intentional addition
-
----
+Status values used below: `mapped` where the concept carries over, `n/a` where no OCI
+equivalent exists, `OCI-only` for features with no AWS counterpart, and `backlog` for
+anything the OCI provider supports that this module does not expose yet.
 
 ## 1. Core / Control
 
 | Feature                      | AWS      | OCI              | Status                      |
 | ---------------------------- | -------- | ---------------- | --------------------------- |
-| Create toggle                | `create` | `create`         | ✅                           |
-| Resource name                | `name`   | `name`           | ✅                           |
+| Create toggle                | `create` | `create`         | mapped                           |
+| Resource name                | `name`   | `name`           | mapped                           |
 | Compartment scoping          | -        | `compartment_id` | OCI-only                    |
-| Per-resource region override | `region` | -                | N/A (provider-level in OCI) |
+| Per-resource region override | `region` | -                | n/a (provider-level in OCI) |
 
 ---
 
@@ -31,9 +23,9 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                 | AWS                  | OCI                                          | Status                      |
 | ----------------------- | -------------------- | -------------------------------------------- | --------------------------- |
-| Image ID                | `ami`                | `source_id`                                  | ✅                           |
-| Image via SSM parameter | `ami_ssm_parameter`  | -                                            | N/A (no SSM service in OCI) |
-| Ignore image changes    | `ignore_ami_changes` | `ignore_image_changes`                       | ✅                           |
+| Image ID                | `ami`                | `source_id`                                  | mapped                           |
+| Image via SSM parameter | `ami_ssm_parameter`  | -                                            | n/a (no SSM service in OCI) |
+| Ignore image changes    | `ignore_ami_changes` | `ignore_image_changes`                       | mapped                           |
 | Source type selection   | -                    | `source_type` (`"image"` \| `"boot_volume"`) | OCI-only (see note below)   |
 
 > **Source type**: OCI supports launching an instance directly from an existing boot volume (e.g.
@@ -45,14 +37,14 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature               | AWS                                        | OCI                                                                                           | Status                                        |
 | --------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| Instance type / shape | `instance_type`                            | `shape`                                                                                       | ✅                                             |
-| OCPU / core count     | `cpu_options.core_count`                   | `shape_config.ocpus`                                                                          | ✅                                             |
+| Instance type / shape | `instance_type`                            | `shape`                                                                                       | mapped                                             |
+| OCPU / core count     | `cpu_options.core_count`                   | `shape_config.ocpus`                                                                          | mapped                                             |
 | Memory (independent)  | -                                          | `shape_config.memory_in_gbs`                                                                  | OCI-only (see note below)                     |
-| Burstable CPU credits | `cpu_credits` (`"standard"`/`"unlimited"`) | `shape_config.baseline_ocpu_utilization` (`"BASELINE_1_1"`/`"BASELINE_1_2"`/`"BASELINE_1_8"`) | ✅                                             |
-| Threads per core      | `cpu_options.threads_per_core`             | -                                                                                             | N/A                                           |
-| AMD SEV-SNP           | `cpu_options.amd_sev_snp`                  | -                                                                                             | N/A                                           |
-| EBS-optimized flag    | `ebs_optimized`                            | -                                                                                             | N/A (OCI storage is always network-optimized) |
-| Nitro Enclaves        | `enclave_options_enabled`                  | -                                                                                             | N/A (AWS-specific security feature)           |
+| Burstable CPU credits | `cpu_credits` (`"standard"`/`"unlimited"`) | `shape_config.baseline_ocpu_utilization` (`"BASELINE_1_1"`/`"BASELINE_1_2"`/`"BASELINE_1_8"`) | mapped                                             |
+| Threads per core      | `cpu_options.threads_per_core`             | -                                                                                             | n/a                                           |
+| AMD SEV-SNP           | `cpu_options.amd_sev_snp`                  | -                                                                                             | n/a                                           |
+| EBS-optimized flag    | `ebs_optimized`                            | -                                                                                             | n/a (OCI storage is always network-optimized) |
+| Nitro Enclaves        | `enclave_options_enabled`                  | -                                                                                             | n/a (AWS-specific security feature)           |
 
 > **Flex shapes**: OCI shapes ending in `.Flex` allow independent selection of OCPU count and
 > memory. AWS instance types are fixed bundles. This is why `shape_config` exists as a separate
@@ -64,14 +56,14 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                          | AWS                                               | OCI                                                    | Status                                                     |
 | -------------------------------- | ------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------- |
-| Availability zone / domain       | `availability_zone` (string, e.g. `"us-east-1a"`) | `availability_domain` (integer: 1, 2, or 3)            | ✅                                                          |
+| Availability zone / domain       | `availability_zone` (string, e.g. `"us-east-1a"`) | `availability_domain` (integer: 1, 2, or 3)            | mapped                                                          |
 | AD name resolution               | -                                                 | Auto-resolved from `oci_identity_availability_domains` | OCI-only                                                   |
-| Dedicated host                   | `host_id`                                         | `dedicated_vm_host_id`                                 | ✅                                                          |
-| Dedicated host resource group    | `host_resource_group_arn`                         | -                                                      | N/A                                                        |
-| Capacity reservation             | `capacity_reservation_specification`              | `capacity_reservation_id`                              | ✅                                                          |
-| Fault domain                     | -                                                 | `fault_domain`                                         | OCI-only ✅                                                 |
-| Placement group                  | `placement_group` / `placement_group_id` / `placement_partition_number` | - | N/A (OCI Cluster Networks are out of scope) |
-| Tenancy (default/dedicated/host) | `tenancy`                                         | -                                                      | N/A (OCI tenancy is the root org, not a placement concept) |
+| Dedicated host                   | `host_id`                                         | `dedicated_vm_host_id`                                 | mapped                                                          |
+| Dedicated host resource group    | `host_resource_group_arn`                         | -                                                      | n/a                                                        |
+| Capacity reservation             | `capacity_reservation_specification`              | `capacity_reservation_id`                              | mapped                                                          |
+| Fault domain                     | -                                                 | `fault_domain`                                         | OCI-only                                                 |
+| Placement group                  | `placement_group` / `placement_group_id` / `placement_partition_number` | - | n/a (OCI Cluster Networks are out of scope) |
+| Tenancy (default/dedicated/host) | `tenancy`                                         | -                                                      | n/a (OCI tenancy is the root org, not a placement concept) |
 
 > **Capacity reservations**: OCI compute capacity reservations are created via
 > `oci_core_compute_capacity_reservation`. Instances target a reservation by setting
@@ -88,16 +80,16 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                     | AWS                                                             | OCI                                                                                   | Status                                                    |
 | --------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| Subnet                      | `subnet_id`                                                     | `subnet_id`                                                                           | ✅                                                         |
-| Ephemeral public IP         | `associate_public_ip_address`                                   | `assign_public_ip`                                                                    | ✅                                                         |
-| Specific private IP         | `private_ip`                                                    | `private_ip`                                                                          | ✅                                                         |
+| Subnet                      | `subnet_id`                                                     | `subnet_id`                                                                           | mapped                                                         |
+| Ephemeral public IP         | `associate_public_ip_address`                                   | `assign_public_ip`                                                                    | mapped                                                         |
+| Specific private IP         | `private_ip`                                                    | `private_ip`                                                                          | mapped                                                         |
 | DNS hostname label          | -                                                               | `hostname_label`                                                                      | OCI-only                                                  |
-| Source/destination check    | `source_dest_check` (default true)                              | `source_dest_check` (default true)                                                    | ✅                                                         |
-| Attach existing NSGs/SGs    | `vpc_security_group_ids`                                        | `nsg_ids`                                                                             | ✅                                                         |
-| Secondary private IPs       | `secondary_private_ips`                                         | -                                                                                     | N/A (OCI supports secondary VNICs but not in this module) |
-| Network interface at launch | `network_interface`                                             | -                                                                                     | N/A (OCI VNIC attachments work differently)               |
-| Secondary network interfaces | `secondary_network_interface` (map, added v6.4.0) | `secondary_network_interface` (map) | ✅ (see note below)                          |
-| IPv6 address assignment     | `enable_primary_ipv6` / `ipv6_address_count` / `ipv6_addresses` | `assign_ipv6ip` / `ipv6address_ipv6subnet_cidr_pair_details` in `create_vnic_details` | ✅ (see note below)                                        |
+| Source/destination check    | `source_dest_check` (default true)                              | `source_dest_check` (default true)                                                    | mapped                                                         |
+| Attach existing NSGs/SGs    | `vpc_security_group_ids`                                        | `nsg_ids`                                                                             | mapped                                                         |
+| Secondary private IPs       | `secondary_private_ips`                                         | -                                                                                     | n/a (OCI supports secondary VNICs but not in this module) |
+| Network interface at launch | `network_interface`                                             | -                                                                                     | n/a (OCI VNIC attachments work differently)               |
+| Secondary network interfaces | `secondary_network_interface` (map, added v6.4.0) | `secondary_network_interface` (map) | mapped (see note)                          |
+| IPv6 address assignment     | `enable_primary_ipv6` / `ipv6_address_count` / `ipv6_addresses` | `assign_ipv6ip` / `ipv6address_ipv6subnet_cidr_pair_details` in `create_vnic_details` | mapped (see note)                                        |
 
 > **Secondary network interfaces**: AWS v6.4.0 added `secondary_network_interface`, a map that
 > attaches additional ENIs at launch via a `dynamic` block on `aws_instance`. OCI has no equivalent
@@ -132,10 +124,10 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                              | AWS                           | OCI                                           | Status                                        |
 | ------------------------------------ | ----------------------------- | --------------------------------------------- | --------------------------------------------- |
-| SSH key                              | `key_name` (key pair name)    | `ssh_authorized_keys` (raw public key string) | ✅ (see note below)                            |
-| User data                            | `user_data`                   | `user_data` (always base64)                   | ✅                                             |
-| User data base64 variant             | `user_data_base64`            | -                                             | N/A (OCI `user_data` accepts base64 directly) |
-| Replace instance on user data change | `user_data_replace_on_change` | -                                             | N/A                                           |
+| SSH key                              | `key_name` (key pair name)    | `ssh_authorized_keys` (raw public key string) | mapped (see note)                            |
+| User data                            | `user_data`                   | `user_data` (always base64)                   | mapped                                             |
+| User data base64 variant             | `user_data_base64`            | -                                             | n/a (OCI `user_data` accepts base64 directly) |
+| Replace instance on user data change | `user_data_replace_on_change` | -                                             | n/a                                           |
 | Additional metadata                  | -                             | `extended_metadata`                           | OCI-only                                      |
 
 > **SSH key mechanism**: AWS references a named key pair stored in EC2. OCI injects the raw
@@ -148,14 +140,14 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                    | AWS                                                      | OCI                                                               | Status                                                                                                   |
 | -------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Boot volume size           | `root_block_device.size`                                 | `boot_volume_size_in_gbs`                                         | ✅                                                                                                        |
-| Boot volume encryption key | `root_block_device.kms_key_id`                           | `boot_volume_encryption_key_id`                                   | ✅                                                                                                        |
-| Delete on termination      | `root_block_device.delete_on_termination` (default true) | `preserve_boot_volume` (default false, inverted)                  | ✅                                                                                                        |
-| Performance (IOPS)         | `root_block_device.iops`                                 | `boot_volume_vpus_per_gb` (0/10/20/30-120)                        | ✅ (see note below)                                                                                       |
-| Throughput                 | `root_block_device.throughput`                           | -                                                                 | N/A (VPU model covers this implicitly)                                                                   |
-| Volume type                | `root_block_device.type`                                 | -                                                                 | N/A (OCI has one volume type)                                                                            |
-| Volume tags                | `root_block_device.tags`                                 | -                                                                 | N/A (OCI boot volumes cannot be tagged at launch time; use `boot_volume_id` output to manage externally) |
-| Predefined backup policy   | -                                                        | `boot_volume_backup_policy` (`gold`/`silver`/`bronze`/`disabled`) | OCI-only                                                                                                 |
+| Boot volume size           | `root_block_device.size`                                 | `boot_volume.size_in_gbs`                                         | mapped                                                                                                        |
+| Boot volume encryption key | `root_block_device.kms_key_id`                           | `boot_volume.kms_key_id`                                   | mapped                                                                                                        |
+| Delete on termination      | `root_block_device.delete_on_termination` (default true) | `boot_volume.preserve` (default false, inverted)                  | mapped                                                                                                        |
+| Performance (IOPS)         | `root_block_device.iops`                                 | `boot_volume.vpus_per_gb` (0/10/20/30-120)                        | mapped (see note)                                                                                       |
+| Throughput                 | `root_block_device.throughput`                           | -                                                                 | n/a (VPU model covers this implicitly)                                                                   |
+| Volume type                | `root_block_device.type`                                 | -                                                                 | n/a (OCI has one volume type)                                                                            |
+| Volume tags                | `root_block_device.tags`                                 | -                                                                 | n/a (OCI boot volumes cannot be tagged at launch time; use `boot_volume_id` output to manage externally) |
+| Predefined backup policy   | -                                                        | `boot_volume.backup_policy` (`gold`/`silver`/`bronze`/`disabled`) | OCI-only                                                                                                 |
 
 > **VPUs vs IOPS**: OCI uses a VPU (Volume Performance Units) model instead of explicit IOPS.
 > `0` = low cost, `10` = balanced (default), `20` = high performance, `30-120` = ultra high.
@@ -167,21 +159,21 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                      | AWS                                  | OCI                                                    | Status                                                         |
 | ---------------------------- | ------------------------------------ | ------------------------------------------------------ | -------------------------------------------------------------- |
-| Additional volumes (map)     | `ebs_volumes`                        | `block_volumes`                                        | ✅                                                              |
-| Volume size                  | `.size`                              | `.size_in_gbs`                                         | ✅                                                              |
-| Encryption key               | `.kms_key_id`                        | `.encryption_key_id`                                   | ✅                                                              |
-| Performance                  | `.iops` / `.throughput`              | `.vpus_per_gb`                                         | ✅ (VPU model, see §7)                                          |
+| Additional volumes (map)     | `ebs_volumes`                        | `block_volumes`                                        | mapped                                                              |
+| Volume size                  | `.size`                              | `.size_in_gbs`                                         | mapped                                                              |
+| Encryption key               | `.kms_key_id`                        | `.kms_key_id`                                   | mapped                                                              |
+| Performance                  | `.iops` / `.throughput`              | `.vpus_per_gb`                                         | mapped (VPU model, see the boot volume section)                                          |
 | Attachment type              | -                                    | `.attachment_type` (`"paravirtualized"` \| `"iscsi"`)  | OCI-only                                                       |
 | Per-volume backup policy     | -                                    | `.backup_policy` (`gold`/`silver`/`bronze`/`disabled`) | OCI-only                                                       |
-| Per-volume tags              | `.tags`                              | `.freeform_tags` / `.defined_tags`                     | ✅                                                              |
-| Volume type                  | `.type` (gp3, io1, etc.)             | -                                                      | N/A (OCI has one volume type)                                  |
-| Final snapshot on destroy    | `.final_snapshot`                    | -                                                      | N/A                                                            |
-| Multi-attach                 | `.multi_attach_enabled`              | -                                                      | N/A                                                            |
-| Outpost ARN                  | `.outpost_arn`                       | -                                                      | N/A                                                            |
-| Create from snapshot         | `.snapshot_id`                       | -                                                      | N/A (use `source_id` + `source_type = "boot_volume"` for boot) |
-| Force detach / skip destroy  | `.force_detach` / `.skip_destroy`    | -                                                      | N/A                                                            |
-| Stop before detach           | `.stop_instance_before_detaching`    | -                                                      | N/A                                                            |
-| Volume tags (instance-level) | `volume_tags` / `enable_volume_tags` | -                                                      | N/A (OCI tags are per-volume in `block_volumes`)               |
+| Per-volume tags              | `.tags`                              | `.freeform_tags` / `.defined_tags`                     | mapped                                                              |
+| Volume type                  | `.type` (gp3, io1, etc.)             | -                                                      | n/a (OCI has one volume type)                                  |
+| Final snapshot on destroy    | `.final_snapshot`                    | -                                                      | n/a                                                            |
+| Multi-attach                 | `.multi_attach_enabled`              | -                                                      | n/a                                                            |
+| Outpost ARN                  | `.outpost_arn`                       | -                                                      | n/a                                                            |
+| Create from snapshot         | `.snapshot_id`                       | -                                                      | n/a (use `source_id` + `source_type = "boot_volume"` for boot) |
+| Force detach / skip destroy  | `.force_detach` / `.skip_destroy`    | -                                                      | n/a                                                            |
+| Stop before detach           | `.stop_instance_before_detaching`    | -                                                      | n/a                                                            |
+| Volume tags (instance-level) | `volume_tags` / `enable_volume_tags` | -                                                      | n/a (OCI tags are per-volume in `block_volumes`)               |
 
 ---
 
@@ -189,7 +181,7 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                     | AWS          | OCI                                             | Status                    |
 | --------------------------- | ------------ | ----------------------------------------------- | ------------------------- |
-| Detailed monitoring         | `monitoring` | `is_monitoring_disabled` (inverted)             | ✅                         |
+| Detailed monitoring         | `monitoring` | `is_monitoring_disabled` (inverted)             | mapped                         |
 | Management agent            | -            | `is_management_disabled`                        | OCI-only                  |
 | Disable all plugins         | -            | `are_all_plugins_disabled`                      | OCI-only                  |
 | Fine-grained plugin control | -            | `cloud_agent_plugins` (map of 10 named plugins) | OCI-only (see note below) |
@@ -206,11 +198,11 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                         | AWS                                            | OCI                                                | Status |
 | ------------------------------- | ---------------------------------------------- | -------------------------------------------------- | ------ |
-| Require session tokens (IMDSv2) | `metadata_options.http_tokens` (`"required"`)  | `metadata_options.is_http_tokens_enabled` (`true`) | ✅      |
-| HTTP endpoint toggle            | `metadata_options.http_endpoint`               | -                                                  | N/A    |
-| IPv6 metadata endpoint          | `metadata_options.http_protocol_ipv6`          | -                                                  | N/A    |
-| Hop limit                       | `metadata_options.http_put_response_hop_limit` | -                                                  | N/A    |
-| Instance metadata tags          | `metadata_options.instance_metadata_tags`      | -                                                  | N/A    |
+| Require session tokens (IMDSv2) | `metadata_options.http_tokens` (`"required"`)  | `metadata_options.is_http_tokens_enabled` (`true`) | mapped      |
+| HTTP endpoint toggle            | `metadata_options.http_endpoint`               | -                                                  | n/a    |
+| IPv6 metadata endpoint          | `metadata_options.http_protocol_ipv6`          | -                                                  | n/a    |
+| Hop limit                       | `metadata_options.http_put_response_hop_limit` | -                                                  | n/a    |
+| Instance metadata tags          | `metadata_options.instance_metadata_tags`      | -                                                  | n/a    |
 
 ---
 
@@ -218,14 +210,14 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature         | AWS                                    | OCI                                                      | Status                                    |
 | --------------- | -------------------------------------- | -------------------------------------------------------- | ----------------------------------------- |
-| Create SG/NSG   | `create_security_group` (default true) | `create_nsg` (default false)                             | ✅ (see note below)                        |
-| SG/NSG name     | `security_group_name`                  | `nsg_name`                                               | ✅                                         |
-| VPC/VCN scoping | `security_group_vpc_id`                | `nsg_vcn_id` (required when `create_nsg = true`)         | ✅                                         |
-| SG/NSG tags     | `security_group_tags`                  | `nsg_tags`                                               | ✅                                         |
-| Ingress rules   | `security_group_ingress_rules`         | `nsg_ingress_rules`                                      | ✅ (see note below)                        |
-| Egress rules    | `security_group_egress_rules`          | `nsg_egress_rules` (default: allow all 0.0.0.0/0 + ::/0) | ✅                                         |
-| Name prefix     | `security_group_use_name_prefix`       | -                                                        | N/A                                       |
-| Description     | `security_group_description`           | -                                                        | N/A (NSG has no description field in OCI) |
+| Create SG/NSG   | `create_security_group` (default true) | `create_nsg` (default false)                             | mapped (see note)                        |
+| SG/NSG name     | `security_group_name`                  | `nsg_name`                                               | mapped                                         |
+| VPC/VCN scoping | `security_group_vpc_id`                | `nsg_vcn_id` (required when `create_nsg = true`)         | mapped                                         |
+| SG/NSG tags     | `security_group_tags`                  | `nsg_tags`                                               | mapped                                         |
+| Ingress rules   | `security_group_ingress_rules`         | `nsg_ingress_rules`                                      | mapped (see note)                        |
+| Egress rules    | `security_group_egress_rules`          | `nsg_egress_rules` (default: allow all 0.0.0.0/0 + ::/0) | mapped                                         |
+| Name prefix     | `security_group_use_name_prefix`       | -                                                        | n/a                                       |
+| Description     | `security_group_description`           | -                                                        | n/a (NSG has no description field in OCI) |
 
 > **Default create behavior**: AWS creates a security group by default (`create_security_group = true`).
 > OCI defaults to `create_nsg = false` because OCI VCNs already have security lists at the subnet
@@ -241,9 +233,9 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                 | AWS          | OCI                         | Status |
 | ----------------------- | ------------ | --------------------------- | ------ |
-| Create static public IP | `create_eip` | `create_reserved_public_ip` | ✅      |
-| Static IP tags          | `eip_tags`   | `reserved_public_ip_tags`   | ✅      |
-| Domain / scope          | `eip_domain` | -                           | N/A    |
+| Create static public IP | `create_eip` | `create_reserved_public_ip` | mapped      |
+| Static IP tags          | `eip_tags`   | `reserved_public_ip_tags`   | mapped      |
+| Domain / scope          | `eip_domain` | -                           | n/a    |
 
 > **Reserved vs Ephemeral**: OCI distinguishes between ephemeral public IPs (assigned at launch,
 > lost on termination) and reserved public IPs (persistent, can be reassigned). `assign_public_ip`
@@ -256,11 +248,11 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                 | AWS                                          | OCI | Status |
 | ----------------------- | -------------------------------------------- | --- | ------ |
-| Create IAM construct    | `create_iam_instance_profile`                | -   | N/A    |
-| Attach existing profile | `iam_instance_profile`                       | -   | N/A    |
-| Role path / name prefix | `iam_role_path` / `iam_role_use_name_prefix` | -   | N/A    |
-| Permissions boundary    | `iam_role_permissions_boundary`              | -   | N/A    |
-| Role tags               | `iam_role_tags`                              | -   | N/A    |
+| Create IAM construct    | `create_iam_instance_profile`                | -   | n/a    |
+| Attach existing profile | `iam_instance_profile`                       | -   | n/a    |
+| Role path / name prefix | `iam_role_path` / `iam_role_use_name_prefix` | -   | n/a    |
+| Permissions boundary    | `iam_role_permissions_boundary`              | -   | n/a    |
+| Role tags               | `iam_role_tags`                              | -   | n/a    |
 
 > **Why this entire section is N/A**: In AWS, the IAM Role is *attached to the instance* via an
 > Instance Profile - so the module must create and wire it up at launch time. In OCI, Instance
@@ -276,15 +268,15 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                             | AWS                                    | OCI                                                               | Status                                                      |
 | ----------------------------------- | -------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
-| Enable preemptible / spot           | `create_spot_instance`                 | `preemptible_instance_config != null`                             | ✅                                                           |
-| Interruption behavior               | `spot_instance_interruption_behavior`  | `preemptible_instance_config.action` (`"TERMINATE"` \| `"STOP"`)  | ✅                                                           |
+| Enable preemptible / spot           | `create_spot_instance`                 | `preemptible_instance_config != null`                             | mapped                                                           |
+| Interruption behavior               | `spot_instance_interruption_behavior`  | `preemptible_instance_config.action` (`"TERMINATE"` \| `"STOP"`)  | mapped                                                           |
 | Preserve boot volume on termination | -                                      | `preemptible_instance_config.preserve_boot_volume_on_termination` | OCI-only                                                    |
-| Price bidding                       | `spot_price`                           | -                                                                 | N/A (OCI preemptible instances are fixed-price, no bidding) |
-| Launch group                        | `spot_launch_group`                    | -                                                                 | N/A                                                         |
-| Spot type (one-time/persistent)     | `spot_type`                            | -                                                                 | N/A                                                         |
-| Wait for fulfillment                | `spot_wait_for_fulfillment`            | -                                                                 | N/A                                                         |
-| Valid from / until                  | `spot_valid_from` / `spot_valid_until` | -                                                                 | N/A                                                         |
-| Market options override             | `instance_market_options`              | -                                                                 | N/A                                                         |
+| Price bidding                       | `spot_price`                           | -                                                                 | n/a (OCI preemptible instances are fixed-price, no bidding) |
+| Launch group                        | `spot_launch_group`                    | -                                                                 | n/a                                                         |
+| Spot type (one-time/persistent)     | `spot_type`                            | -                                                                 | n/a                                                         |
+| Wait for fulfillment                | `spot_wait_for_fulfillment`            | -                                                                 | n/a                                                         |
+| Valid from / until                  | `spot_valid_from` / `spot_valid_until` | -                                                                 | n/a                                                         |
+| Market options override             | `instance_market_options`              | -                                                                 | n/a                                                         |
 
 > **Preemptible vs Spot**: OCI preemptible instances are reclaimed when Oracle needs capacity.
 > There is no bidding market - you pay a fixed lower price. The `action` on reclamation is either
@@ -296,8 +288,8 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                   | AWS                        | OCI                          | Status             |
 | ------------------------- | -------------------------- | ---------------------------- | ------------------ |
-| Fetch Windows credentials | `get_password_data` (bool) | `is_windows_instance` (bool) | ✅ (see note below) |
-| Hibernation               | `hibernation`              | -                            | N/A                |
+| Fetch Windows credentials | `get_password_data` (bool) | `is_windows_instance` (bool) | mapped (see note) |
+| Hibernation               | `hibernation`              | -                            | n/a                |
 
 > **Credential retrieval**: AWS `get_password_data = true` returns a base64-encoded encrypted
 > password blob that must be decrypted with the private key. OCI `is_windows_instance = true`
@@ -310,13 +302,13 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                | AWS                                                             | OCI                                                             | Status                                         |
 | ---------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------- |
-| Shutdown behavior      | `instance_initiated_shutdown_behavior` (`"stop"`/`"terminate"`) | `instance_initiated_shutdown_behavior` (`"STOP"`/`"TERMINATE"`) | ✅                                              |
+| Shutdown behavior      | `instance_initiated_shutdown_behavior` (`"stop"`/`"terminate"`) | `instance_initiated_shutdown_behavior` (`"STOP"`/`"TERMINATE"`) | mapped                                              |
 | Desired power state    | -                                                               | `instance_state` (`"RUNNING"` \| `"STOPPED"`)                   | OCI-only                                       |
-| Termination protection | `disable_api_termination` (+ `force_destroy` override, added v6.4.0) | -                                                          | N/A                                            |
-| Stop protection        | `disable_api_stop`                                              | -                                                               | N/A                                            |
-| Maintenance options    | `maintenance_options`                                           | -                                                               | N/A (OCI handles live migration automatically) |
-| Launch template        | `launch_template`                                               | -                                                               | N/A                                            |
-| Timeouts               | `timeouts`                                                      | `timeouts`                                                      | ✅                                              |
+| Termination protection | `disable_api_termination` (+ `force_destroy` override, added v6.4.0) | -                                                          | n/a                                            |
+| Stop protection        | `disable_api_stop`                                              | -                                                               | n/a                                            |
+| Maintenance options    | `maintenance_options`                                           | -                                                               | n/a (OCI handles live migration automatically) |
+| Launch template        | `launch_template`                                               | -                                                               | n/a                                            |
+| Timeouts               | `timeouts`                                                      | `timeouts`                                                      | mapped                                              |
 
 > **`instance_state`**: OCI lets Terraform declaratively manage whether the instance is running
 > or stopped. This maps to nothing in AWS - stopping and starting is done out-of-band.
@@ -331,11 +323,11 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Feature                        | AWS                                  | OCI                                       | Status                              |
 | ------------------------------ | ------------------------------------ | ----------------------------------------- | ----------------------------------- |
-| Resource tags                  | `tags`                               | `tags`                                    | ✅ Identical                         |
+| Resource tags                  | `tags`                               | `tags`                                    | mapped                         |
 | Defined tags (namespace)       | -                                    | `defined_tags`                            | OCI-only                            |
-| Instance-specific tags         | `instance_tags`                      | `instance_tags` / `instance_defined_tags` | ✅ Identical                         |
-| Volume tags (instance-level)   | `volume_tags` / `enable_volume_tags` | -                                         | N/A (per-volume in `block_volumes`) |
-| Inherited provider tags output | `tags_all` output                    | -                                         | N/A                                 |
+| Instance-specific tags         | `instance_tags`                      | `instance_tags` / `instance_defined_tags` | mapped                         |
+| Volume tags (instance-level)   | `volume_tags` / `enable_volume_tags` | -                                         | n/a (per-volume in `block_volumes`) |
+| Inherited provider tags output | `tags_all` output                    | -                                         | n/a                                 |
 
 ---
 
@@ -343,7 +335,7 @@ make the interface feel familiar to users coming from the AWS module, while bein
 
 | Wrapper             | AWS         | OCI         | Status |
 | ------------------- | ----------- | ----------- | ------ |
-| Root module wrapper | `wrappers/` | `wrappers/` | ✅      |
+| Root module wrapper | `wrappers/` | `wrappers/` | mapped      |
 
 ---
 
@@ -377,12 +369,13 @@ make the interface feel familiar to users coming from the AWS module, while bein
 | `timeouts`                                   | `timeouts`                                 | Identical structure                     |
 | `tags`                                       | `tags`                                     | Identical                               |
 | `instance_tags`                              | `instance_tags`                            | Identical                               |
-| `root_block_device.size`                     | `boot_volume_size_in_gbs`                  | Boot volume size                        |
-| `root_block_device.kms_key_id`               | `boot_volume_encryption_key_id`            | KMS encryption                          |
-| `root_block_device.delete_on_termination`    | `preserve_boot_volume`                     | Inverted                                |
-| `root_block_device.iops`                     | `boot_volume_vpus_per_gb`                  | Performance (VPU model)                 |
+| `root_block_device`                          | `boot_volume` (object)                     | Same shape: one object per volume       |
+| `root_block_device.size`                     | `boot_volume.size_in_gbs`                  | Boot volume size                        |
+| `root_block_device.kms_key_id`               | `boot_volume.kms_key_id`            | KMS encryption                          |
+| `root_block_device.delete_on_termination`    | `boot_volume.preserve`                     | Inverted                                |
+| `root_block_device.iops`                     | `boot_volume.vpus_per_gb`                  | Performance (VPU model)                 |
 | `ebs_volumes`                                | `block_volumes`                            | Additional volumes map                  |
-| `ebs_volumes[*].kms_key_id`                  | `block_volumes[*].encryption_key_id`       | Per-volume encryption                   |
+| `ebs_volumes[*].kms_key_id`                  | `block_volumes[*].kms_key_id`       | Per-volume encryption                   |
 | `ebs_volumes[*].size`                        | `block_volumes[*].size_in_gbs`             | Per-volume size                         |
 | `create_security_group`                      | `create_nsg`                               | Create network security group           |
 | `security_group_name`                        | `nsg_name`                                 | NSG name                                |
@@ -449,9 +442,9 @@ exposed by this module. They are the implementation backlog for AWS feature pari
 | `compartment_id`                         | Required OCI compartment scoping - no AWS concept                         |
 | `source_type`                            | `"image"` or `"boot_volume"` - boot volume as instance source             |
 | `shape_config.memory_in_gbs`             | Independent memory selection on Flex shapes                               |
-| `boot_volume_vpus_per_gb`                | VPU-based performance tiers (0/10/20/30-120)                              |
-| `boot_volume_backup_policy`              | Predefined backup policy (gold/silver/bronze/disabled)                    |
-| `preserve_boot_volume`                   | Keep boot volume on instance termination                                  |
+| `boot_volume.vpus_per_gb`                | VPU-based performance tiers (0/10/20/30-120)                              |
+| `boot_volume.backup_policy`              | Predefined backup policy (gold/silver/bronze/disabled)                    |
+| `boot_volume.preserve`                   | Keep boot volume on instance termination                                  |
 | `hostname_label`                         | DNS label in the subnet zone                                              |
 | `is_management_disabled`                 | Disable OCI Management Agent plugin                                       |
 | `are_all_plugins_disabled`               | Bulk-disable all cloud agent plugins                                      |
@@ -506,7 +499,7 @@ _No OCI-native features remain unimplemented._
 | `tags_all`                                                                         | OCI has no inherited provider-default tags                                  |
 | `spot_bid_status` / `spot_request_state` / `spot_instance_id`                      | No spot market in OCI                                                       |
 | `root_block_device` / `ephemeral_block_device`                                     | Not exposed as structured output in OCI                                     |
-| `iam_role_name` / `iam_role_arn` / `iam_role_unique_id` / `iam_instance_profile_*` | N/A - Dynamic Groups are not attached to instances; no module output needed |
+| `iam_role_name` / `iam_role_arn` / `iam_role_unique_id` / `iam_instance_profile_*` | n/a - Dynamic Groups are not attached to instances; no module output needed |
 | `security_group_arn`                                                               | NSGs have no ARN in OCI                                                     |
 
 ---
@@ -559,7 +552,7 @@ _No OCI-native features remain unimplemented._
 | -------------------------------------------- | --------------- | ----------------------------------------------------------------------------------- |
 | `session-manager` - SSH-less access          | Not implemented | OCI equivalent: Bastion service + dynamic group. Potential future `bastion` example |
 | `ec2_multiple` - `for_each` across instances | Not implemented | The `wrappers/` module covers this pattern; a dedicated example could showcase it   |
-| Spot price bidding options                   | N/A             | OCI preemptible instances have no price bidding                                     |
+| Spot price bidding options                   | n/a             | OCI preemptible instances have no price bidding                                     |
 
 #### AWS missing vs OCI
 
@@ -588,20 +581,12 @@ profile (OCI Dynamic Groups match instances by rule - nothing to attach at launc
 **OCI advantages in this module:** flex shapes with independent OCPU + memory sizing, fine-grained
 cloud agent plugin control (10 plugins), predefined backup policies (gold/silver/bronze), boot from
 existing boot volume, explicit `instance_state` desired-state control, compartment scoping.
-Additionally, this module ships 8 native `tftest.hcl` files under `tests/`; the AWS module has no
-automated test suite of its own (pre-commit fmt/validate/docs only).
+Each example has a matching `tftest.hcl` file under `tests/`.
 
-### Implementation backlog (priority order)
+### Not yet implemented
 
-#### AWS parity gaps - OCI provider supports these, module does not yet expose them
+No AWS parity gaps and no OCI-native features are outstanding. Two examples would be
+worth adding:
 
-_None - all AWS parity gaps are now closed._
-
-#### OCI-native features - no AWS equivalent, not yet in the module
-
-_All OCI-native features are now implemented._
-
-#### Examples
-
-1. **`bastion` example** - SSH-less access via OCI Bastion service + dynamic group
-2. **`multiple` / wrapper example** - showcase `for_each` across instances with shared defaults
+- `bastion` - SSH-less access via the OCI Bastion service plus a dynamic group
+- `multiple` - `for_each` across instances with shared defaults, via `wrappers/`

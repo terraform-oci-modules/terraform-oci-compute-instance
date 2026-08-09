@@ -21,7 +21,7 @@ module "instance" {
     memory_in_gbs = 16
   }
 
-  subnet_id           = module.vcn.private_subnet_ids[0]
+  subnet_id           = module.vcn.private_subnets[0]
   ssh_authorized_keys = file("~/.ssh/id_rsa.pub")
 
   tags = {
@@ -97,6 +97,18 @@ resource "oci_identity_policy" "instance" {
 OCI Instance Principal is architecturally different from AWS IAM instance profiles - Dynamic Groups
 and policies are tenant-level constructs managed separately from the compute instance.
 
+## Tags
+
+OCI supports two tag types, both mapped:
+
+| Variable       | OCI tag type    |
+| -------------- | --------------- |
+| `tags`         | `freeform_tags` |
+| `defined_tags` | `defined_tags`  |
+
+Per-resource overrides follow the same pair: `instance_tags` / `instance_defined_tags`, plus
+`nsg_tags` and `reserved_public_ip_tags`.
+
 ## Examples
 
 - [simple](examples/simple) - Minimal instance with private networking
@@ -109,15 +121,20 @@ and policies are tenant-level constructs managed separately from the compute ins
 - [ipv6](examples/ipv6) - Dual-stack instance with IPv6 address assignment
 - [secondary-network-interface](examples/secondary-network-interface) - Attaching a secondary VNIC after launch
 
-## AWS → OCI Feature Parity
 
-See [docs/feature_parity.md](docs/feature_parity.md) for a detailed comparison between this module
-and `terraform-aws-modules/ec2-instance/aws`, including:
+## Wrappers
 
-- Variable mapping (what maps to what, what's AWS-only, what's OCI-only)
-- Output mapping
-- Example comparison and gap analysis
-- Potential future additions
+- [wrappers](wrappers) - Terragrunt-style `for_each` wrapper for the root module
+
+## Testing
+
+Each example ships with a [`terraform test`](https://developer.hashicorp.com/terraform/language/tests) file that applies real OCI resources, asserts key outputs, then destroys on completion. See [docs/testing.md](docs/testing.md) for prerequisites, OCI auth setup, and how to run the tests.
+
+## AWS to OCI feature parity
+
+See [docs/feature_parity.md](docs/feature_parity.md) for the full comparison against
+`terraform-aws-modules/ec2-instance/aws`: feature, variable and output mapping, what is not
+applicable to OCI, and what is not yet implemented.
 
 ## Related Projects
 

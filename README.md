@@ -265,7 +265,7 @@ No modules.
 | <a name="output_hostname_label"></a> [hostname\_label](#output\_hostname\_label) | The hostname label of the instance in the subnet DNS zone |
 | <a name="output_id"></a> [id](#output\_id) | The OCID of the instance |
 | <a name="output_image_id"></a> [image\_id](#output\_image\_id) | The OCID of the source image used to launch the instance |
-| <a name="output_instance_all_attributes"></a> [instance\_all\_attributes](#output\_instance\_all\_attributes) | All attributes of the created instance (full object, auto-updating) |
+| <a name="output_instance_all_attributes"></a> [instance\_all\_attributes](#output\_instance\_all\_attributes) | Attributes of the created instance, excluding 3 deprecated top-level fields (hostname\_label, image, subnet\_id) whose non-deprecated equivalents are included under create\_vnic\_details/source\_details |
 | <a name="output_instance_credentials"></a> [instance\_credentials](#output\_instance\_credentials) | Initial Windows credentials fetched from OCI (username + password). Only populated when is\_windows\_instance = true |
 | <a name="output_name"></a> [name](#output\_name) | The name specified as argument to this module |
 | <a name="output_nsg_all_attributes"></a> [nsg\_all\_attributes](#output\_nsg\_all\_attributes) | All attributes of the created NSG (full object, auto-updating) |

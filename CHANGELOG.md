@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.3.1...v0.3.2) (2026-08-16)
+
+### Bug Fixes
+
+* Exclude deprecated attributes from instance_all_attributes ([87ff2bd](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/commit/87ff2bd06753fa823e67ee319f18794a7a0ef017))
+
 ## [0.3.1](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.3.0...v0.3.1) (2026-08-16)
 
 ### Bug Fixes

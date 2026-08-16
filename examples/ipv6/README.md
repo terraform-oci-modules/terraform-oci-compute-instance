@@ -32,7 +32,7 @@ Note that this example may create resources which can cost money. Run `terraform
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.7 |
 | <a name="requirement_oci"></a> [oci](#requirement\_oci) | >= 6.0 |
 
 ## Providers

@@ -164,7 +164,7 @@ This is an independent community module and is **not affiliated with, endorsed b
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.7 |
 | <a name="requirement_oci"></a> [oci](#requirement\_oci) | >= 6.0 |
 
 ## Providers

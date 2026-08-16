@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.3.0...v0.3.1) (2026-08-16)
+
+### Bug Fixes
+
+* Sensitive output bug + bump required_version to 1.7 with mock tests ([83c3a98](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/commit/83c3a981426b73765873ddb0a2c93f94566dedaf))
+
 ## [0.3.0](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.2.0...v0.3.0) (2026-08-09)
 
 ### Features

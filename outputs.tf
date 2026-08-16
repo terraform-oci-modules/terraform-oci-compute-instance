@@ -58,6 +58,7 @@ output "image_id" {
 
 output "instance_all_attributes" {
   description = "All attributes of the created instance (full object, auto-updating)"
+  sensitive   = true
   value       = try(local.instance, null)
 }
 

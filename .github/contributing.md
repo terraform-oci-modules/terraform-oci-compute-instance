@@ -24,7 +24,7 @@ with the project.
 
 Before contributing you need the following tools installed locally:
 
-- `terraform` >= 1.6
+- `terraform` >= 1.7
 - `pre-commit` - `pip3 install pre-commit`
 - `tflint` v0.59.1
 - `terraform-docs` v0.20.0

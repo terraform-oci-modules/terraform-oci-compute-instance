@@ -38,7 +38,10 @@ output "public_ip" {
 
 output "hostname_label" {
   description = "The hostname label of the instance in the subnet DNS zone"
-  value       = try(local.instance.hostname_label, null)
+  # local.instance.hostname_label is a deprecated top-level shorthand for
+  # this same value; read it from create_vnic_details instead, which is not
+  # deprecated.
+  value = try(local.instance.create_vnic_details[0].hostname_label, null)
 }
 
 output "primary_vnic_id" {
@@ -57,11 +60,22 @@ output "image_id" {
 }
 
 output "instance_all_attributes" {
-  description = "All attributes of the created instance (full object, auto-updating)"
+  # 3 top-level attributes on oci_core_instance are deprecated
+  # (hostname_label, image, subnet_id) - see the hostname_label/image_id
+  # outputs above and create_vnic_details.subnet_id below for their
+  # non-deprecated equivalents. Filtering by key here (rather than reading
+  # local.instance wholesale, or reconstructing every other field by hand)
+  # avoids ever evaluating those 3 attributes' values at all, which is what
+  # actually triggers the provider's deprecation warning - not merely their
+  # presence in the final output. try(..., null) rather than an
+  # `== null ? null : ...` guard for the same reason: the equality
+  # comparison would itself read local.instance wholesale.
+  description = "Attributes of the created instance, excluding 3 deprecated top-level fields (hostname_label, image, subnet_id) whose non-deprecated equivalents are included under create_vnic_details/source_details"
   sensitive   = true
-  value       = try(local.instance, null)
+  value = try({
+    for k, v in local.instance : k => v if !contains(["hostname_label", "image", "subnet_id"], k)
+  }, null)
 }
-
 ################################################################################
 # NSG
 ################################################################################

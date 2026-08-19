@@ -303,6 +303,12 @@ variable "secondary_network_interface" {
     (from the preinstalled oci-utils package) to do this automatically; on
     other distros, configure the interface manually (netplan, nmcli, etc.).
 
+    create_reserved_public_ip attaches a stable (RESERVED) public IP to this
+    secondary VNIC's private IP, independent of assign_public_ip (which is
+    ephemeral and tied to the VNIC's own lifecycle). The AWS module has no
+    equivalent: create_eip only covers the primary interface there, with no
+    variable for a persistent Elastic IP on a secondary one.
+
     Example:
       secondary_network_interface = {
         "eth1" = {
@@ -321,6 +327,8 @@ variable "secondary_network_interface" {
     skip_source_dest_check    = optional(bool, false)
     nsg_ids                   = optional(list(string), [])
     display_name              = optional(string)
+    create_reserved_public_ip = optional(bool, false)
+    reserved_public_ip_tags   = optional(map(string), {})
     tags                      = optional(map(string), {})
     defined_tags              = optional(map(string), {})
   }))

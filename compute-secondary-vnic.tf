@@ -47,3 +47,43 @@ data "oci_core_vnic" "secondary" {
 
   vnic_id = oci_core_vnic_attachment.this[each.key].vnic_id
 }
+
+################################################################################
+# Reserved Public IP per secondary VNIC  (AWS has no per-secondary-interface EIP)
+################################################################################
+
+locals {
+  secondary_network_interface_with_reserved_ip = local.create ? {
+    for k, v in var.secondary_network_interface : k => v if v.create_reserved_public_ip
+  } : {}
+}
+
+# Secondary private IP - required to attach a reserved public IP to a secondary VNIC.
+data "oci_core_private_ips" "secondary" {
+  for_each = local.secondary_network_interface_with_reserved_ip
+
+  vnic_id = oci_core_vnic_attachment.this[each.key].vnic_id
+
+  depends_on = [oci_core_vnic_attachment.this]
+}
+
+resource "oci_core_public_ip" "secondary" {
+  for_each = local.secondary_network_interface_with_reserved_ip
+
+  compartment_id = var.compartment_id
+  lifetime       = "RESERVED"
+  display_name   = "${var.name}-${each.key}-public-ip"
+
+  private_ip_id = data.oci_core_private_ips.secondary[each.key].private_ips[0].id
+
+  freeform_tags = merge(
+    { "Name" = "${var.name}-${each.key}-public-ip" },
+    var.tags,
+    each.value.reserved_public_ip_tags,
+  )
+  defined_tags = merge(var.defined_tags, each.value.defined_tags)
+
+  lifecycle {
+    ignore_changes = [defined_tags, freeform_tags]
+  }
+}

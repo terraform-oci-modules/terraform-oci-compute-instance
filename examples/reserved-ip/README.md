@@ -59,4 +59,5 @@ Note that this example may create resources which can cost money (reserved publi
 | <a name="output_instance_id"></a> [instance\_id](#output\_instance\_id) | OCID of the instance |
 | <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | The public IP address of the instance |
 | <a name="output_reserved_public_ip"></a> [reserved\_public\_ip](#output\_reserved\_public\_ip) | The reserved public IP address |
+| <a name="output_secondary_reserved_public_ips"></a> [secondary\_reserved\_public\_ips](#output\_secondary\_reserved\_public\_ips) | Map of secondary network interface name to its reserved public IP resource |
 <!-- END_TF_DOCS -->

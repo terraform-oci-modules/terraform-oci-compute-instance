@@ -134,6 +134,11 @@ output "secondary_network_interfaces" {
   }
 }
 
+output "secondary_reserved_public_ips" {
+  description = "Map of secondary network interface name to its reserved public IP resource (full object). Only includes entries with create_reserved_public_ip = true"
+  value       = { for k, v in oci_core_public_ip.secondary : k => v }
+}
+
 ################################################################################
 # Reserved Public IP
 ################################################################################

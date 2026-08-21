@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.3.2...v0.4.0) (2026-08-21)
+
+### Features
+
+* Add reserved public IP support for secondary network interfaces ([#5](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/issues/5)) ([d4670d4](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/commit/d4670d41c1c0363eab9a577a5d67f3b59151b102))
+
 ## [0.3.2](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.3.1...v0.3.2) (2026-08-16)
 
 ### Bug Fixes

@@ -21,4 +21,12 @@ run "creates_reserved_public_ip" {
     condition     = output.public_ip == output.reserved_public_ip
     error_message = "Instance public IP must match the reserved IP"
   }
+  assert {
+    condition     = output.secondary_reserved_public_ips["data"].ip_address != null
+    error_message = "Secondary VNIC must have its own reserved public IP"
+  }
+  assert {
+    condition     = output.secondary_reserved_public_ips["data"].ip_address != output.reserved_public_ip
+    error_message = "Secondary reserved public IP must be distinct from the primary one"
+  }
 }

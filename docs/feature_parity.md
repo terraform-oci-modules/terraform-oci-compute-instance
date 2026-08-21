@@ -87,7 +87,7 @@ anything the OCI provider supports that this module does not expose yet.
 | Source/destination check    | `source_dest_check` (default true)                              | `source_dest_check` (default true)                                                    | mapped                                                         |
 | Attach existing NSGs/SGs    | `vpc_security_group_ids`                                        | `nsg_ids`                                                                             | mapped                                                         |
 | Secondary private IPs       | `secondary_private_ips`                                         | -                                                                                     | n/a (OCI supports secondary VNICs but not in this module) |
-| Network interface at launch | `network_interface`                                             | -                                                                                     | n/a (OCI VNIC attachments work differently)               |
+| Network interface at launch | `network_interface`                                             | -                                                                                     | n/a (see note)               |
 | Secondary network interfaces | `secondary_network_interface` (map, added v6.4.0) | `secondary_network_interface` (map) | mapped (see note)                          |
 | IPv6 address assignment     | `enable_primary_ipv6` / `ipv6_address_count` / `ipv6_addresses` | `assign_ipv6ip` / `ipv6address_ipv6subnet_cidr_pair_details` in `create_vnic_details` | mapped (see note)                                        |
 
@@ -106,6 +106,17 @@ anything the OCI provider supports that this module does not expose yet.
 > preinstalled `oci-utils`) or a manual static-IP config on other distros. This is analogous to how
 > block volumes (§8) attach as a raw block device that still needs partitioning/formatting/mounting
 > at the OS level, out of scope for both this module and the AWS one.
+>
+> Each secondary VNIC can also get its own persistent reserved public IP
+> (`create_reserved_public_ip` on the map entry) - a capability with no AWS-module equivalent at
+> all, see §12.
+>
+> **Network interface at launch**: AWS's `network_interface` block attaches a pre-existing,
+> independently created `aws_network_interface` at launch time. There is no OCI equivalent and none
+> is possible: OCI has no standalone VNIC resource at all - `oci_core_vnic_attachment` always
+> creates a brand-new VNIC via its own embedded `create_vnic_details` block (confirmed against the
+> provider schema; `vnic_id` on that resource is a computed output, not an input). A VNIC cannot
+> exist unattached, so there is nothing pre-existing to pass in.
 >
 > **Hostname label**: OCI injects a DNS label directly on the VNIC at launch time
 > (e.g. `"myhost"` → `myhost.subnet.vcn.oraclevcn.com`). AWS private DNS is managed
@@ -231,16 +242,25 @@ anything the OCI provider supports that this module does not expose yet.
 
 ## 12. Reserved Public IP / Elastic IP
 
-| Feature                 | AWS          | OCI                         | Status |
-| ----------------------- | ------------ | --------------------------- | ------ |
-| Create static public IP | `create_eip` | `create_reserved_public_ip` | mapped      |
-| Static IP tags          | `eip_tags`   | `reserved_public_ip_tags`   | mapped      |
-| Domain / scope          | `eip_domain` | -                           | n/a    |
+| Feature                              | AWS          | OCI                                                    | Status                        |
+| ------------------------------------- | ------------ | ------------------------------------------------------- | ------------------------------ |
+| Create static public IP               | `create_eip` | `create_reserved_public_ip`                              | mapped                        |
+| Static IP tags                        | `eip_tags`   | `reserved_public_ip_tags`                                | mapped                        |
+| Domain / scope                        | `eip_domain` | -                                                        | n/a                            |
+| Reserved public IP on a secondary VNIC | -            | `secondary_network_interface[*].create_reserved_public_ip` | OCI-only (beyond AWS parity) |
 
 > **Reserved vs Ephemeral**: OCI distinguishes between ephemeral public IPs (assigned at launch,
 > lost on termination) and reserved public IPs (persistent, can be reassigned). `assign_public_ip`
 > creates an ephemeral IP; `create_reserved_public_ip` creates a persistent one. AWS EIPs are
 > always persistent.
+>
+> **Reserved public IP on a secondary interface**: `create_eip` in the AWS module only covers the
+> primary interface; there is no AWS-module variable for a persistent Elastic IP tied to a
+> secondary network interface at all. This module implements it directly: each entry in
+> `secondary_network_interface` can independently set `create_reserved_public_ip` /
+> `reserved_public_ip_tags`, wired to its own `oci_core_public_ip` resource attached to that VNIC's
+> private IP (`compute-secondary-vnic.tf`), exposed via the `secondary_reserved_public_ips` output.
+> This goes beyond AWS parity rather than mapping to it.
 
 ---
 
@@ -458,6 +478,7 @@ exposed by this module. They are the implementation backlog for AWS feature pari
 | `fault_domain`                           | Fault domain placement within the AD (`"FAULT-DOMAIN-1"` / `"2"` / `"3"`) |
 | `is_pv_encryption_in_transit_enabled`    | In-transit encryption for paravirtualized boot/block volume I/O           |
 | `ipxe_script`                            | Custom iPXE boot script; overrides OCI default network boot sequence      |
+| `secondary_network_interface[*].create_reserved_public_ip` / `.reserved_public_ip_tags` | Persistent public IP on a secondary VNIC; no AWS `create_eip` equivalent for non-primary interfaces |
 
 ### OCI-only - not yet implemented
 
@@ -518,6 +539,7 @@ _No OCI-native features remain unimplemented._
 | `resolved_availability_domain`                      | Full AD name after integer resolution           |
 | `secondary_vnic_attachments`                        | Full `oci_core_vnic_attachment` objects, keyed by map key |
 | `secondary_network_interfaces`                      | Resolved per-interface attributes: vnic_id, nic_index, private_ip, public_ip, mac_address |
+| `secondary_reserved_public_ips`                     | Full `oci_core_public_ip` objects for secondary VNICs with `create_reserved_public_ip = true`, keyed by map key |
 
 ---
 
@@ -538,7 +560,7 @@ _No OCI-native features remain unimplemented._
 | `complete`             | All features: flex shape (4 OCPU/32 GB), boot volume encryption + backup, block volumes, NSG with ingress rules, reserved public IP, dynamic group + IAM policy, user data, cloud agent plugins |
 | `flex-shape`           | Three instances demonstrating `BASELINE_1_1`, `BASELINE_1_2`, and `BASELINE_1_8` burstable OCPU modes                                                                                           |
 | `block-volumes`        | Paravirtualized, iSCSI, and archive block volumes with different backup policies                                                                                                                |
-| `reserved-ip`          | Reserved (static) public IP - creates a new reserved IP and attaches it to an instance (`create_reserved_public_ip = true`)                                                                     |
+| `reserved-ip`          | Reserved (static) public IP on the primary interface and on a secondary VNIC (`create_reserved_public_ip = true` on both the module and a `secondary_network_interface` entry)                 |
 | `windows`              | Windows Server instance with `assign_public_ip = true`, `is_windows_instance = true`, `instance_credentials` output                                                                             |
 | `capacity-reservation` | Compute capacity reservation + instance targeting it - shape must match `instance_reservation_configs`                                                                                          |
 | `ipv6`                 | Dual-stack instance (public IPv4 + auto-assigned IPv6) - VCN with `enable_ipv6 = true`, instance with `assign_ipv6ip = true`                                                                    |
@@ -580,7 +602,9 @@ profile (OCI Dynamic Groups match instances by rule - nothing to attach at launc
 
 **OCI advantages in this module:** flex shapes with independent OCPU + memory sizing, fine-grained
 cloud agent plugin control (10 plugins), predefined backup policies (gold/silver/bronze), boot from
-existing boot volume, explicit `instance_state` desired-state control, compartment scoping.
+existing boot volume, explicit `instance_state` desired-state control, compartment scoping, a
+persistent reserved public IP on secondary VNICs (no AWS `create_eip` equivalent beyond the
+primary interface, see §12).
 Each example has a matching `tftest.hcl` file under `tests/`.
 
 ### Not yet implemented

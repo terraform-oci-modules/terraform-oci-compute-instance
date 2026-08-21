@@ -16,7 +16,8 @@ locals {
 }
 
 ################################################################################
-# VCN (supporting resource) - public subnet so reserved IPs are reachable
+# VCN (supporting resource) - two public subnets so reserved IPs are reachable
+# on both the primary and secondary interface
 ################################################################################
 
 module "vcn" {
@@ -27,7 +28,10 @@ module "vcn" {
   compartment_id = var.compartment_id
   vcn_cidr_block = local.vcn_cidr
 
-  public_subnets = [cidrsubnet(local.vcn_cidr, 4, 8)]
+  public_subnets = [
+    cidrsubnet(local.vcn_cidr, 4, 8),
+    cidrsubnet(local.vcn_cidr, 4, 9),
+  ]
 
   create_igw = true
 
@@ -75,5 +79,19 @@ module "instance" {
     "Purpose" = "stable-ingress"
   }
 
+  # Secondary VNIC with its own reserved public IP. The AWS module has no
+  # equivalent - create_eip only covers the primary interface there.
+  secondary_network_interface = {
+    "data" = {
+      subnet_id                 = module.vcn.public_subnets[1]
+      create_reserved_public_ip = true
+      reserved_public_ip_tags = {
+        "Purpose" = "stable-egress-secondary"
+      }
+    }
+  }
+
   tags = local.tags
+
+  depends_on = [module.vcn]
 }

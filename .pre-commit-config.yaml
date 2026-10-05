@@ -4,6 +4,10 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_wrapper_module_for_each
+        args:
+          - '--args=--module-repo-org=terraform-oci-modules'
+          - '--args=--module-repo-shortname=compute-instance'
+          - '--args=--module-repo-provider=oci'
       - id: terraform_docs
         args:
           - '--args=--lockfile=false'

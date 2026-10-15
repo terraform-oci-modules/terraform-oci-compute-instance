@@ -162,3 +162,100 @@ run "ignore_image_changes_selects_alternate_resource" {
     error_message = "ignore_image_changes = true must create oci_core_instance.ignore_image instead"
   }
 }
+
+# --- Cloud agent plugin names match what OCI offers ----------------------------
+
+run "plugin_aliases_use_current_oci_names" {
+  command = plan
+
+  variables {
+    cloud_agent_plugins = {
+      run_command             = "ENABLED"
+      java_management_service = "ENABLED"
+      osms                    = "ENABLED"
+    }
+  }
+
+  assert {
+    condition = (
+      toset([for p in oci_core_instance.this[0].agent_config[0].plugins_config : p.name]) ==
+      toset(["Compute Instance Run Command", "Oracle Java Management Service", "OS Management Hub Agent"])
+    )
+    error_message = "run_command, java_management_service and osms must map to the plugin names OCI lists today"
+  }
+}
+
+run "plugin_rejects_removed_autonomous_linux_alias" {
+  command = plan
+
+  variables {
+    cloud_agent_plugins = { autonomous_linux = "ENABLED" }
+  }
+
+  expect_failures = [var.cloud_agent_plugins]
+}
+
+run "plugin_rejects_bad_state" {
+  command = plan
+
+  variables {
+    cloud_agent_plugins = { monitoring = "ON" }
+  }
+
+  expect_failures = [var.cloud_agent_plugins]
+}
+
+run "plugin_rejects_alias_and_replacement_together" {
+  command = plan
+
+  variables {
+    cloud_agent_plugins = {
+      osms              = "ENABLED"
+      os_management_hub = "DISABLED"
+    }
+  }
+
+  expect_failures = [oci_core_instance.this]
+}
+
+run "plugin_rejects_alias_and_full_name_together" {
+  command = plan
+
+  variables {
+    cloud_agent_plugins = {
+      bastion   = "ENABLED"
+      "Bastion" = "ENABLED"
+    }
+  }
+
+  expect_failures = [oci_core_instance.this]
+}
+
+# --- Preemptible action --------------------------------------------------------
+
+run "preemptible_action_defaults_to_terminate" {
+  command = plan
+
+  variables {
+    preemptible_instance_config = { preserve_boot_volume_on_termination = true }
+  }
+
+  assert {
+    condition     = oci_core_instance.this[0].preemptible_instance_config[0].preemption_action[0].type == "TERMINATE"
+    error_message = "preemptible_instance_config.action must default to TERMINATE"
+  }
+  assert {
+    condition     = oci_core_instance.this[0].preemptible_instance_config[0].preemption_action[0].preserve_boot_volume == true
+    error_message = "preserve_boot_volume_on_termination must reach preemption_action.preserve_boot_volume"
+  }
+}
+
+run "preemptible_rejects_stop" {
+  command = plan
+
+  variables {
+    preemptible_instance_config = { action = "STOP" }
+  }
+
+  expect_failures = [var.preemptible_instance_config]
+}

@@ -26,20 +26,35 @@ locals {
   plugin_name_map = {
     monitoring              = "Compute Instance Monitoring"
     bastion                 = "Bastion"
-    run_command             = "Run Command"
-    osms                    = "OS Management Service Agent"
+    run_command             = "Compute Instance Run Command"
+    os_management_hub       = "OS Management Hub Agent"
     custom_logs             = "Custom Logs Monitoring"
     vulnerability_scanning  = "Vulnerability Scanning"
     block_volume_mgmt       = "Block Volume Management"
     management              = "Management Agent"
-    java_management_service = "Java Management Service"
-    autonomous_linux        = "Oracle Autonomous Linux"
+    java_management_service = "Oracle Java Management Service"
+    cloud_guard             = "Cloud Guard Workload Protection"
+    fleet_management        = "Fleet Application Management Service"
+    weblogic_management     = "WebLogic Management Service"
+    rdma_gpu_monitoring     = "Compute RDMA GPU Monitoring"
+    hpc_rdma_auto_config    = "Compute HPC RDMA Auto-Configuration"
+    hpc_rdma_authentication = "Compute HPC RDMA Authentication"
+    # Deprecated: OS Management Service was retired in favor of OS Management
+    # Hub, so the old alias now enables its replacement.
+    osms = "OS Management Hub Agent"
   }
 
-  resolved_plugins = {
+  # Grouped by OCI plugin name so two keys naming the same plugin (osms and
+  # os_management_hub, or an alias and its full name) reach the precondition on
+  # the instance instead of failing here with a bare duplicate-key error.
+  plugin_states = {
     for alias, state in var.cloud_agent_plugins :
-    lookup(local.plugin_name_map, alias, alias) => state
+    lookup(local.plugin_name_map, alias, alias) => state...
   }
+  resolved_plugins = { for name, states in local.plugin_states : name => states[0] }
+  duplicate_plugins = [
+    for name, states in local.plugin_states : name if length(states) > 1
+  ]
 
   # Freeform tag merge helpers
   instance_tags = merge(
@@ -174,7 +189,7 @@ resource "oci_core_instance" "this" {
     content {
       preemption_action {
         type                 = preemptible_instance_config.value.action
-        preserve_boot_volume = lookup(preemptible_instance_config.value, "preserve_boot_volume_on_termination", false)
+        preserve_boot_volume = preemptible_instance_config.value.preserve_boot_volume_on_termination
       }
     }
   }
@@ -205,6 +220,11 @@ resource "oci_core_instance" "this" {
 
   lifecycle {
     ignore_changes = [defined_tags, freeform_tags]
+
+    precondition {
+      condition     = length(local.duplicate_plugins) == 0
+      error_message = "cloud_agent_plugins sets these plugins more than once, through different keys for the same plugin (osms is an alias of os_management_hub): ${join(", ", local.duplicate_plugins)}."
+    }
   }
 }
 
@@ -288,7 +308,7 @@ resource "oci_core_instance" "ignore_image" {
     content {
       preemption_action {
         type                 = preemptible_instance_config.value.action
-        preserve_boot_volume = lookup(preemptible_instance_config.value, "preserve_boot_volume_on_termination", false)
+        preserve_boot_volume = preemptible_instance_config.value.preserve_boot_volume_on_termination
       }
     }
   }
@@ -319,6 +339,11 @@ resource "oci_core_instance" "ignore_image" {
 
   lifecycle {
     ignore_changes = [defined_tags, freeform_tags, source_details]
+
+    precondition {
+      condition     = length(local.duplicate_plugins) == 0
+      error_message = "cloud_agent_plugins sets these plugins more than once, through different keys for the same plugin (osms is an alias of os_management_hub): ${join(", ", local.duplicate_plugins)}."
+    }
   }
 }
 

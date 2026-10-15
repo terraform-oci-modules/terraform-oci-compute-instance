@@ -117,7 +117,7 @@ module "instance" {
   cloud_agent_plugins = {
     monitoring             = "ENABLED"
     bastion                = "ENABLED"
-    osms                   = "ENABLED"
+    os_management_hub      = "ENABLED"
     vulnerability_scanning = "ENABLED"
     custom_logs            = "ENABLED"
     block_volume_mgmt      = "DISABLED"

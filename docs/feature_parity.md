@@ -324,7 +324,8 @@ anything the OCI provider supports that this module does not expose yet.
 
 | Feature                | AWS                                                             | OCI                                                             | Status                                         |
 | ---------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------- |
-| Shutdown behavior      | `instance_initiated_shutdown_behavior` (`"stop"`/`"terminate"`) | `instance_initiated_shutdown_behavior` (`"STOP"`/`"TERMINATE"`) | mapped                                              |
+| Shutdown behavior      | `instance_initiated_shutdown_behavior` (`"stop"`/`"terminate"`) | -                                                               | n/a                                            |
+| Maintenance recovery   | -                                                               | `recovery_action` (`"RESTORE_INSTANCE"` \| `"STOP_INSTANCE"`)   | OCI-only                                       |
 | Desired power state    | -                                                               | `instance_state` (`"RUNNING"` \| `"STOPPED"`)                   | OCI-only                                       |
 | Termination protection | `disable_api_termination` (+ `force_destroy` override, added v6.4.0) | -                                                          | n/a                                            |
 | Stop protection        | `disable_api_stop`                                              | -                                                               | n/a                                            |
@@ -387,7 +388,6 @@ anything the OCI provider supports that this module does not expose yet.
 | `monitoring`                                 | `is_monitoring_disabled`                   | Inverted                                |
 | `metadata_options.http_tokens`               | `metadata_options.is_http_tokens_enabled`  | IMDSv2 enforcement                      |
 | `get_password_data`                          | `is_windows_instance`                      | Windows credential retrieval            |
-| `instance_initiated_shutdown_behavior`       | `instance_initiated_shutdown_behavior`     | Case differs                            |
 | `timeouts`                                   | `timeouts`                                 | Identical structure                     |
 | `tags`                                       | `tags`                                     | Identical                               |
 | `instance_tags`                              | `instance_tags`                            | Identical                               |
@@ -430,6 +430,7 @@ exposed by this module. They are the implementation backlog for AWS feature pari
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `region`                                                                                                                                                                                                                   | Provider-level in OCI; no per-resource override                                    |
 | `ami_ssm_parameter`                                                                                                                                                                                                        | No SSM service in OCI                                                              |
+| `instance_initiated_shutdown_behavior`                                                                                                                                                                                    | OCI has no setting for what happens when the OS shuts itself down                  |
 | `disable_api_termination` / `disable_api_stop` / `force_destroy`                                                                                                                                                          | No instance protection in OCI                                                      |
 | `ebs_optimized`                                                                                                                                                                                                            | OCI storage is always network-optimized                                            |
 | `enclave_options_enabled`                                                                                                                                                                                                  | Nitro Enclaves is AWS-specific                                                     |
@@ -464,6 +465,7 @@ exposed by this module. They are the implementation backlog for AWS feature pari
 | `compartment_id`                         | Required OCI compartment scoping - no AWS concept                         |
 | `source_type`                            | `"image"` or `"boot_volume"` - boot volume as instance source             |
 | `shape_config.memory_in_gbs`             | Independent memory selection on Flex shapes                               |
+| `recovery_action`                        | State the instance is recovered in after infrastructure maintenance       |
 | `boot_volume.vpus_per_gb`                | VPU-based performance tiers (0/10/20/30-120)                              |
 | `boot_volume.backup_policy`              | Predefined backup policy (gold/silver/bronze/disabled)                    |
 | `boot_volume.preserve`                   | Keep boot volume on instance termination                                  |
@@ -593,7 +595,7 @@ _No OCI-native features remain unimplemented._
 
 ## Summary
 
-**Good parity:** core instance (image/source, shape, placement, networking, tags, shutdown behavior,
+**Good parity:** core instance (image/source, shape, placement, networking, tags,
 timeouts), block volumes, NSG/security group, public IP (EIP/reserved IP), spot/preemptible,
 Windows credentials, user data, metadata options (IMDSv2), secondary network interfaces.
 

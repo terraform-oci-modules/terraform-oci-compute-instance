@@ -178,9 +178,9 @@ resource "oci_core_instance" "this" {
   }
 
   dynamic "availability_config" {
-    for_each = var.instance_initiated_shutdown_behavior != null ? [1] : []
+    for_each = var.recovery_action != null ? [1] : []
     content {
-      recovery_action = var.instance_initiated_shutdown_behavior
+      recovery_action = var.recovery_action
     }
   }
 
@@ -297,9 +297,9 @@ resource "oci_core_instance" "ignore_image" {
   }
 
   dynamic "availability_config" {
-    for_each = var.instance_initiated_shutdown_behavior != null ? [1] : []
+    for_each = var.recovery_action != null ? [1] : []
     content {
-      recovery_action = var.instance_initiated_shutdown_behavior
+      recovery_action = var.recovery_action
     }
   }
 

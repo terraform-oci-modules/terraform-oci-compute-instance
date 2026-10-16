@@ -720,16 +720,24 @@ variable "instance_state" {
   }
 }
 
-variable "instance_initiated_shutdown_behavior" {
+variable "recovery_action" {
   description = <<-EOT
-    What happens when the OS initiates a shutdown. Maps to
-    instance_initiated_shutdown_behavior in AWS.
-    "STOP"      → instance stops (can be restarted)
-    "TERMINATE" → instance is permanently terminated
-    null        → use OCI default (STOP)
+    The state the instance is recovered in after OCI infrastructure maintenance
+    (availability_config.recovery_action):
+    "RESTORE_INSTANCE" → back to its state before the maintenance; a running
+                         instance is rebooted (OCI default)
+    "STOP_INSTANCE"    → recovered in the stopped state
+    null               → use the OCI default (RESTORE_INSTANCE)
+    OCI has no equivalent of the AWS module's instance_initiated_shutdown_behavior
+    (what happens when the OS shuts itself down).
   EOT
   type        = string
   default     = null
+
+  validation {
+    condition     = var.recovery_action == null ? true : contains(["RESTORE_INSTANCE", "STOP_INSTANCE"], var.recovery_action)
+    error_message = "recovery_action must be \"RESTORE_INSTANCE\" or \"STOP_INSTANCE\"."
+  }
 }
 
 variable "timeouts" {

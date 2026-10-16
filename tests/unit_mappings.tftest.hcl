@@ -259,3 +259,37 @@ run "preemptible_rejects_stop" {
 
   expect_failures = [var.preemptible_instance_config]
 }
+
+# --- Maintenance recovery ------------------------------------------------------
+
+run "recovery_action_reaches_availability_config" {
+  command = plan
+
+  variables {
+    recovery_action = "STOP_INSTANCE"
+  }
+
+  assert {
+    condition     = oci_core_instance.this[0].availability_config[0].recovery_action == "STOP_INSTANCE"
+    error_message = "recovery_action must reach availability_config.recovery_action"
+  }
+}
+
+run "recovery_action_unset_sends_no_availability_config" {
+  command = plan
+
+  assert {
+    condition     = length(oci_core_instance.this[0].availability_config) == 0
+    error_message = "with recovery_action unset, no availability_config block must be sent"
+  }
+}
+
+run "recovery_action_rejects_aws_values" {
+  command = plan
+
+  variables {
+    recovery_action = "TERMINATE"
+  }
+
+  expect_failures = [var.recovery_action]
+}

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.4.0...v0.5.0) (2026-10-18)
+
+### Features
+
+* Replace instance_initiated_shutdown_behavior with recovery_action and fix cloud agent plugin names ([#6](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/issues/6)) ([7294f34](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/commit/7294f34d2d181c145bda5759fd7b5464c9b67665))
+
 ## [0.4.0](https://github.com/terraform-oci-modules/terraform-oci-compute-instance/compare/v0.3.2...v0.4.0) (2026-08-21)
 
 ### Features

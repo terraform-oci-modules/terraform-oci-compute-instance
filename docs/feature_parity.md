@@ -195,13 +195,15 @@ anything the OCI provider supports that this module does not expose yet.
 | Detailed monitoring         | `monitoring` | `is_monitoring_disabled` (inverted)             | mapped                         |
 | Management agent            | -            | `is_management_disabled`                        | OCI-only                  |
 | Disable all plugins         | -            | `are_all_plugins_disabled`                      | OCI-only                  |
-| Fine-grained plugin control | -            | `cloud_agent_plugins` (map of 10 named plugins) | OCI-only (see note below) |
+| Fine-grained plugin control | -            | `cloud_agent_plugins` (map of 15 named plugins) | OCI-only (see note below) |
 
 > **Cloud agent plugins**: OCI instances run a Cloud Agent with individually controllable plugins:
-> Compute Instance Monitoring, Bastion, Run Command, OS Management, Custom Logs, Vulnerability
-> Scanning, Block Volume Management, Management Agent, Java Management Service, Oracle Autonomous
-> Linux. Each can be `"ENABLED"` or `"DISABLED"` independently. AWS CloudWatch agent is configured
-> at the OS level, not the instance API.
+> Compute Instance Monitoring, Bastion, Compute Instance Run Command, OS Management Hub Agent,
+> Custom Logs Monitoring, Vulnerability Scanning, Block Volume Management, Management Agent,
+> Oracle Java Management Service, Cloud Guard Workload Protection, Fleet Application Management
+> Service, WebLogic Management Service and the RDMA/HPC plugins. Each can be `"ENABLED"` or
+> `"DISABLED"` independently. AWS CloudWatch agent is configured at the OS level, not the
+> instance API.
 
 ---
 
@@ -289,7 +291,7 @@ anything the OCI provider supports that this module does not expose yet.
 | Feature                             | AWS                                    | OCI                                                               | Status                                                      |
 | ----------------------------------- | -------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
 | Enable preemptible / spot           | `create_spot_instance`                 | `preemptible_instance_config != null`                             | mapped                                                           |
-| Interruption behavior               | `spot_instance_interruption_behavior`  | `preemptible_instance_config.action` (`"TERMINATE"` \| `"STOP"`)  | mapped                                                           |
+| Interruption behavior               | `spot_instance_interruption_behavior`  | `preemptible_instance_config.action` (`"TERMINATE"` only)      | mapped                                                           |
 | Preserve boot volume on termination | -                                      | `preemptible_instance_config.preserve_boot_volume_on_termination` | OCI-only                                                    |
 | Price bidding                       | `spot_price`                           | -                                                                 | n/a (OCI preemptible instances are fixed-price, no bidding) |
 | Launch group                        | `spot_launch_group`                    | -                                                                 | n/a                                                         |
@@ -322,7 +324,8 @@ anything the OCI provider supports that this module does not expose yet.
 
 | Feature                | AWS                                                             | OCI                                                             | Status                                         |
 | ---------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------- |
-| Shutdown behavior      | `instance_initiated_shutdown_behavior` (`"stop"`/`"terminate"`) | `instance_initiated_shutdown_behavior` (`"STOP"`/`"TERMINATE"`) | mapped                                              |
+| Shutdown behavior      | `instance_initiated_shutdown_behavior` (`"stop"`/`"terminate"`) | -                                                               | n/a                                            |
+| Maintenance recovery   | -                                                               | `recovery_action` (`"RESTORE_INSTANCE"` \| `"STOP_INSTANCE"`)   | OCI-only                                       |
 | Desired power state    | -                                                               | `instance_state` (`"RUNNING"` \| `"STOPPED"`)                   | OCI-only                                       |
 | Termination protection | `disable_api_termination` (+ `force_destroy` override, added v6.4.0) | -                                                          | n/a                                            |
 | Stop protection        | `disable_api_stop`                                              | -                                                               | n/a                                            |
@@ -385,7 +388,6 @@ anything the OCI provider supports that this module does not expose yet.
 | `monitoring`                                 | `is_monitoring_disabled`                   | Inverted                                |
 | `metadata_options.http_tokens`               | `metadata_options.is_http_tokens_enabled`  | IMDSv2 enforcement                      |
 | `get_password_data`                          | `is_windows_instance`                      | Windows credential retrieval            |
-| `instance_initiated_shutdown_behavior`       | `instance_initiated_shutdown_behavior`     | Case differs                            |
 | `timeouts`                                   | `timeouts`                                 | Identical structure                     |
 | `tags`                                       | `tags`                                     | Identical                               |
 | `instance_tags`                              | `instance_tags`                            | Identical                               |
@@ -428,6 +430,7 @@ exposed by this module. They are the implementation backlog for AWS feature pari
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `region`                                                                                                                                                                                                                   | Provider-level in OCI; no per-resource override                                    |
 | `ami_ssm_parameter`                                                                                                                                                                                                        | No SSM service in OCI                                                              |
+| `instance_initiated_shutdown_behavior`                                                                                                                                                                                    | OCI has no setting for what happens when the OS shuts itself down                  |
 | `disable_api_termination` / `disable_api_stop` / `force_destroy`                                                                                                                                                          | No instance protection in OCI                                                      |
 | `ebs_optimized`                                                                                                                                                                                                            | OCI storage is always network-optimized                                            |
 | `enclave_options_enabled`                                                                                                                                                                                                  | Nitro Enclaves is AWS-specific                                                     |
@@ -462,6 +465,7 @@ exposed by this module. They are the implementation backlog for AWS feature pari
 | `compartment_id`                         | Required OCI compartment scoping - no AWS concept                         |
 | `source_type`                            | `"image"` or `"boot_volume"` - boot volume as instance source             |
 | `shape_config.memory_in_gbs`             | Independent memory selection on Flex shapes                               |
+| `recovery_action`                        | State the instance is recovered in after infrastructure maintenance       |
 | `boot_volume.vpus_per_gb`                | VPU-based performance tiers (0/10/20/30-120)                              |
 | `boot_volume.backup_policy`              | Predefined backup policy (gold/silver/bronze/disabled)                    |
 | `boot_volume.preserve`                   | Keep boot volume on instance termination                                  |
@@ -591,7 +595,7 @@ _No OCI-native features remain unimplemented._
 
 ## Summary
 
-**Good parity:** core instance (image/source, shape, placement, networking, tags, shutdown behavior,
+**Good parity:** core instance (image/source, shape, placement, networking, tags,
 timeouts), block volumes, NSG/security group, public IP (EIP/reserved IP), spot/preemptible,
 Windows credentials, user data, metadata options (IMDSv2), secondary network interfaces.
 

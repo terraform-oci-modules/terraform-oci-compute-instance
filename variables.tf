@@ -469,22 +469,42 @@ variable "cloud_agent_plugins" {
     Aliases are normalized to OCI plugin names automatically.
 
     Available aliases:
-      monitoring             → "Compute Instance Monitoring"
-      bastion                → "Bastion"
-      run_command            → "Run Command"
-      osms                   → "OS Management Service Agent"
-      custom_logs            → "Custom Logs Monitoring"
-      vulnerability_scanning → "Vulnerability Scanning"
-      block_volume_mgmt      → "Block Volume Management"
-      management             → "Management Agent"
-      java_management_service→ "Java Management Service"
-      autonomous_linux       → "Oracle Autonomous Linux"
+      monitoring              → "Compute Instance Monitoring"
+      bastion                 → "Bastion"
+      run_command             → "Compute Instance Run Command"
+      os_management_hub       → "OS Management Hub Agent"
+      custom_logs             → "Custom Logs Monitoring"
+      vulnerability_scanning  → "Vulnerability Scanning"
+      block_volume_mgmt       → "Block Volume Management"
+      management              → "Management Agent"
+      java_management_service → "Oracle Java Management Service"
+      cloud_guard             → "Cloud Guard Workload Protection"
+      fleet_management        → "Fleet Application Management Service"
+      weblogic_management     → "WebLogic Management Service"
+      rdma_gpu_monitoring     → "Compute RDMA GPU Monitoring"
+      hpc_rdma_auto_config    → "Compute HPC RDMA Auto-Configuration"
+      hpc_rdma_authentication → "Compute HPC RDMA Authentication"
+      osms                    → "OS Management Hub Agent" (deprecated: OS
+                                Management Service was retired, use
+                                os_management_hub)
 
-    You may also pass OCI plugin names directly (the full string).
+    Which plugins an image offers depends on its OS; list them with
+    `oci instance-agent available-plugins get`. You may also pass OCI plugin
+    names directly (the full string). Set each plugin through one key only:
+    an alias and its full name, or osms and os_management_hub, fail the plan.
   EOT
   type        = map(string)
   default     = {}
   nullable    = false
+
+  validation {
+    condition     = alltrue([for v in values(var.cloud_agent_plugins) : contains(["ENABLED", "DISABLED"], v)])
+    error_message = "cloud_agent_plugins values must be \"ENABLED\" or \"DISABLED\"."
+  }
+  validation {
+    condition     = !contains(keys(var.cloud_agent_plugins), "autonomous_linux")
+    error_message = "The autonomous_linux alias was removed: OCI no longer offers an \"Oracle Autonomous Linux\" cloud agent plugin."
+  }
 }
 
 ################################################################################
@@ -652,11 +672,12 @@ variable "preemptible_instance_config" {
     OCI preemptible instances are terminated when capacity is needed; there is no
     price bidding - you pay a fixed lower price.
 
-    action                          - "TERMINATE" (default) or "STOP" (shape-dependent)
+    action                              - "TERMINATE" (default and the only
+                                          action OCI supports)
     preserve_boot_volume_on_termination - Whether to keep the boot volume on preemption
   EOT
   type = object({
-    action                              = string
+    action                              = optional(string, "TERMINATE")
     preserve_boot_volume_on_termination = optional(bool, false)
   })
   default = null
@@ -664,9 +685,9 @@ variable "preemptible_instance_config" {
   validation {
     condition = (
       var.preemptible_instance_config == null
-      || try(contains(["TERMINATE", "STOP"], var.preemptible_instance_config.action), false)
+      || try(var.preemptible_instance_config.action == "TERMINATE", false)
     )
-    error_message = "preemptible_instance_config.action must be \"TERMINATE\" or \"STOP\"."
+    error_message = "preemptible_instance_config.action must be \"TERMINATE\", the only preemption action OCI supports."
   }
 }
 
@@ -699,16 +720,24 @@ variable "instance_state" {
   }
 }
 
-variable "instance_initiated_shutdown_behavior" {
+variable "recovery_action" {
   description = <<-EOT
-    What happens when the OS initiates a shutdown. Maps to
-    instance_initiated_shutdown_behavior in AWS.
-    "STOP"      → instance stops (can be restarted)
-    "TERMINATE" → instance is permanently terminated
-    null        → use OCI default (STOP)
+    The state the instance is recovered in after OCI infrastructure maintenance
+    (availability_config.recovery_action):
+    "RESTORE_INSTANCE" → back to its state before the maintenance; a running
+                         instance is rebooted (OCI default)
+    "STOP_INSTANCE"    → recovered in the stopped state
+    null               → use the OCI default (RESTORE_INSTANCE)
+    OCI has no equivalent of the AWS module's instance_initiated_shutdown_behavior
+    (what happens when the OS shuts itself down).
   EOT
   type        = string
   default     = null
+
+  validation {
+    condition     = var.recovery_action == null ? true : contains(["RESTORE_INSTANCE", "STOP_INSTANCE"], var.recovery_action)
+    error_message = "recovery_action must be \"RESTORE_INSTANCE\" or \"STOP_INSTANCE\"."
+  }
 }
 
 variable "timeouts" {

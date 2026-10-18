@@ -12,9 +12,9 @@ This wrapper does not implement any extra functionality.
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/terraform-oci-compute-instance/aws//wrappers"
+  source = "tfr:///terraform-oci-modules/compute-instance/oci//wrappers"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-terraform-oci-compute-instance.git//wrappers?ref=master"
+  # source = "git::git@github.com:terraform-oci-modules/terraform-oci-compute-instance.git//wrappers?ref=master"
 }
 
 inputs = {
@@ -42,7 +42,7 @@ inputs = {
 
 ```hcl
 module "wrapper" {
-  source = "terraform-aws-modules/terraform-oci-compute-instance/aws//wrappers"
+  source = "terraform-oci-modules/compute-instance/oci//wrappers"
 
   defaults = { # Default values
     create = true
@@ -70,9 +70,9 @@ module "wrapper" {
 
 ```hcl
 terraform {
-  source = "tfr:///terraform-aws-modules/terraform-oci-compute-instance/aws//wrappers"
+  source = "tfr:///terraform-oci-modules/compute-instance/oci//wrappers"
   # Alternative source:
-  # source = "git::git@github.com:terraform-aws-modules/terraform-aws-terraform-oci-compute-instance.git//wrappers?ref=master"
+  # source = "git::git@github.com:terraform-oci-modules/terraform-oci-compute-instance.git//wrappers?ref=master"
 }
 
 inputs = {
